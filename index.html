@@ -1,0 +1,1694 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Synthesize — AI Drug Discovery Laboratory</title>
+<meta name="description" content="Design molecules. Simulate treatments. Discover the future of medicine. An AI-powered virtual pharmacology laboratory with a molecule designer, synthesis flask, binding simulator and ADME engine.">
+<meta property="og:title" content="Synthesize — AI Drug Discovery Laboratory">
+<meta property="og:description" content="Design molecules. Simulate treatments. Discover the future of medicine.">
+<meta property="og:image" content="/logo.png">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:site" content="@SynthesizeFun">
+<link rel="icon" type="image/png" href="/logo.png">
+<link rel="apple-touch-icon" href="/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300;1,9..144,400&family=Figtree:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F3FAF8; --surface:#FFFFFF; --panel:#E9F5F2; --ink:#06231F; --muted:#4D6B64; --faint:#8AA39C; --line:#D8EAE5;
+  --accent:#0C7F68; --accent-soft:#D6F2EA; --gold:#8A6212; --btn:#07564B; --btn-ink:#FFFFFF; --rose:#B33A63;
+  --shadow:0 1px 0 rgba(6,60,50,.04),0 10px 30px -14px rgba(6,60,50,.2);
+  --serif:"Fraunces","Iowan Old Style","Palatino Linotype",Georgia,serif;
+  --sans:"Figtree",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  color-scheme:light; box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#03191C; --surface:#06262A; --panel:#073036; --ink:#E8FFF9; --muted:#95BDB5; --faint:#6A9089; --line:#0E4349;
+    --accent:#34E2B0; --accent-soft:#073E3B; --gold:#FFD166; --btn:#13A88B; --btn-ink:#04221E; --rose:#FF7AA8;
+    --shadow:0 10px 34px -16px rgba(0,0,0,.7); color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#03191C; --surface:#06262A; --panel:#073036; --ink:#E8FFF9; --muted:#95BDB5; --faint:#6A9089; --line:#0E4349;
+  --accent:#34E2B0; --accent-soft:#073E3B; --gold:#FFD166; --btn:#13A88B; --btn-ink:#04221E; --rose:#FF7AA8;
+  --shadow:0 10px 34px -16px rgba(0,0,0,.7); color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 80px);-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
+img{max-width:100%}
+button,input,textarea{font:inherit;color:inherit}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+.wrap{max-width:1320px;margin:0 auto;padding:0 clamp(16px,4vw,64px)}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:60;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px)}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:50;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;height:76px;border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:12px;text-decoration:none;flex-shrink:0}
+.brand img{width:38px;height:38px}
+.brand span{font-family:var(--serif);font-size:27px;letter-spacing:-.005em;line-height:1}
+nav.main{display:flex;gap:4px}
+nav.main a{padding:9px 14px;border-radius:6px;font-size:13.5px;color:var(--muted);text-decoration:none;white-space:nowrap}
+nav.main a:hover{color:var(--ink)}
+nav.main a[aria-current="page"]{background:var(--accent-soft);color:var(--accent)}
+.btn-ghost{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border:1px solid var(--line);background:var(--surface);border-radius:6px;font-family:var(--mono);font-size:12px;font-weight:500;cursor:pointer;box-shadow:0 1px 2px rgba(6,60,50,.07)}
+.btn-ghost:hover{border-color:var(--accent)}
+.btn-ghost svg{width:15px;height:15px}
+.mono{font-family:var(--mono);font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--faint)}
+.mono.v{color:var(--accent)}
+.icon-btn.menu-btn{display:none}
+.x-btn{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border:1px solid var(--line);background:var(--surface);border-radius:6px;font-family:var(--mono);font-size:12px;font-weight:500;text-decoration:none;box-shadow:0 1px 2px rgba(6,60,50,.07)}
+.x-btn:hover{border-color:var(--accent);color:var(--accent)}
+.x-btn svg{width:14px;height:14px}
+.foot-links{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.x-btn{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border:1px solid var(--line);background:var(--surface);border-radius:6px;font-family:var(--mono);font-size:12px;font-weight:500;text-decoration:none;box-shadow:0 1px 2px rgba(6,60,50,.07)}
+.x-btn:hover{border-color:var(--accent);color:var(--accent)}
+.x-btn svg{width:14px;height:14px}
+.foot-links{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.icon-btn{width:32px;height:32px;display:grid;place-items:center;border:0;background:transparent;border-radius:6px;cursor:pointer;color:inherit}
+.icon-btn svg{width:17px;height:17px}
+
+.hero{display:grid;grid-template-columns:1.4fr 1fr;align-items:end;gap:40px;padding:56px 0 40px}
+.kicker{display:flex;align-items:center;gap:8px;margin-bottom:14px}
+.kicker::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 22%,transparent),0 0 12px var(--accent)}
+h1{font-family:var(--serif);font-weight:400;font-size:clamp(46px,6.4vw,80px);line-height:.98;letter-spacing:-.02em;margin:0}
+h1 em{display:block;font-style:italic;color:var(--accent)}
+.hero-side p{color:var(--muted);max-width:42ch;margin:0 0 22px}
+.textlink{display:inline-flex;align-items:center;gap:8px;text-decoration:none;font-size:14.5px;border-bottom:1px solid transparent}
+.textlink:hover{border-color:currentColor}
+.textlink svg,.btn svg{width:14px;height:14px}
+h2{font-family:var(--serif);font-weight:400;font-size:clamp(32px,3.6vw,44px);line-height:1.05;letter-spacing:-.01em;margin:6px 0 10px}
+h2 em{font-style:italic;color:var(--accent)}
+
+/* lab */
+.lab{display:grid;grid-template-columns:260px minmax(0,1fr) 260px;background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden;box-shadow:var(--shadow)}
+.side{padding:24px 22px}
+.side h3{font-family:var(--serif);font-weight:400;font-size:30px;margin:8px 0 16px;line-height:1.05}
+.row{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.cond{list-style:none;margin:0 0 20px;padding:0;display:flex;flex-direction:column;gap:2px}
+.cond button{width:100%;display:flex;align-items:center;gap:12px;padding:11px 10px;border:0;background:transparent;border-radius:6px;cursor:pointer;text-align:left;font-size:13.5px}
+.cond button .n{font-family:var(--mono);font-size:11px;color:var(--faint)}
+.cond button .ic{margin-left:auto;color:var(--faint);width:14px;height:14px;flex-shrink:0}
+.cond button:hover{background:color-mix(in srgb,var(--accent-soft) 60%,transparent)}
+.cond button[aria-pressed="true"]{background:var(--accent-soft);color:var(--accent)}
+.cond button[aria-pressed="true"] .ic{color:var(--accent)}
+.side .label{margin-top:18px;margin-bottom:6px}
+.side p.txt{margin:0;font-size:14px;color:var(--muted)}
+.side p.txt.strong{color:var(--ink)}
+.ctrl{border-top:1px solid var(--line);margin-top:22px;padding-top:6px}
+.slider{margin-top:16px}
+.slider .row span:first-child{font-size:14px}
+.slider .row span:last-child{font-family:var(--mono);font-size:12.5px;color:var(--muted)}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:4px;background:var(--line);border-radius:4px;margin:14px 0 4px;accent-color:var(--btn)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:var(--btn);border:3px solid var(--surface);box-shadow:0 0 0 1px var(--btn);cursor:pointer}
+input[type=range]::-moz-range-thumb{width:12px;height:12px;border-radius:50%;background:var(--btn);border:3px solid var(--surface);box-shadow:0 0 0 1px var(--btn);cursor:pointer}
+.lawrow{display:flex;justify-content:space-between;gap:10px;margin-top:20px;font-size:13px;color:var(--muted)}
+.lawrow b{font-family:var(--mono);font-weight:400;color:var(--accent);text-align:right}
+.ctrl-note{font-size:12.5px;color:var(--faint);margin:10px 0 0}
+
+.stage{display:flex;flex-direction:column;border-left:1px solid var(--line);border-right:1px solid var(--line);background:#042024;color:#DFFBF3;min-width:0}
+.stage-head{display:flex;justify-content:space-between;align-items:center;padding:12px 16px 12px 20px;border-bottom:1px solid #0B4A4A;gap:12px;flex-wrap:wrap}
+.stage .mono{color:#7FB9AE}
+.stage .icon-btn{color:#E9E1FF}
+.stage .icon-btn:hover{background:#0C4F4A}
+.stage .icon-btn[aria-pressed="true"]{background:#0F6358;color:#8CFFE0}
+.canvas-box{position:relative;flex:1;min-height:540px;background:radial-gradient(ellipse at 50% 45%,#0A4B49 0%,#053033 45%,#02181C 100%)}
+.canvas-box::before{content:"";position:absolute;inset:0;background-image:radial-gradient(rgba(140,255,224,.14) 1px,transparent 1.2px);background-size:24px 24px;pointer-events:none}
+canvas#stage{position:absolute;inset:0;width:100%;height:100%;cursor:grab;touch-action:none}
+canvas#stage.dragging{cursor:grabbing}
+.hint{position:absolute;left:16px;bottom:16px;right:180px;font-size:12px;color:#5E8A82;pointer-events:none}
+.banner{position:absolute;left:50%;top:18px;transform:translateX(-50%);font-family:var(--mono);font-size:11.5px;letter-spacing:.05em;color:#FFE1A8;background:rgba(4,32,36,.75);border:1px solid #1C6B63;padding:6px 12px;border-radius:20px;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap}
+.banner.on{opacity:1}
+.stage-foot{display:flex;justify-content:space-between;align-items:center;padding:14px 20px;border-top:1px solid #0B4A4A;font-size:12px;color:#9BC9C0;gap:12px;flex-wrap:wrap}
+.legend{display:flex;gap:16px;flex-wrap:wrap}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:8px;height:8px;border-radius:50%;display:inline-block;box-shadow:0 0 8px currentColor}
+.metric .name{display:flex;justify-content:space-between;font-size:13px;color:var(--muted);gap:8px}
+.metric .val{font-family:var(--serif);font-size:52px;line-height:1.05;letter-spacing:-.01em}
+.metric + .metric{margin-top:20px}
+.metric .sub{margin-top:4px}
+.spark{width:100%;height:46px;display:block;margin-top:6px}
+.inspector{border-top:1px solid var(--line);margin-top:22px;padding-top:18px}
+.inspector h4{display:flex;align-items:center;gap:8px;margin:0 0 10px;font-weight:500;font-size:14.5px}
+.inspector h4 svg{width:15px;height:15px}
+.inspector dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:6px 12px;font-size:13px}
+.inspector dt{color:var(--muted)}
+.inspector dd{margin:0;text-align:right;font-family:var(--mono);font-size:12px}
+.inspector .empty{color:var(--faint);font-size:13px;margin:0}
+
+.below{display:grid;grid-template-columns:minmax(0,1.9fr) 1fr;gap:56px;padding:56px 0 48px}
+.below .right{border-left:1px solid var(--line);padding-left:40px}
+.head-row{display:flex;justify-content:space-between;align-items:flex-start;gap:20px}
+.btn{display:inline-flex;align-items:center;gap:10px;padding:11px 18px;border:0;border-radius:6px;background:var(--btn);color:var(--btn-ink);font-size:14px;font-weight:500;cursor:pointer;text-decoration:none;white-space:nowrap}
+.btn:hover{filter:brightness(1.15)}
+.btn:disabled{opacity:.55;cursor:default;filter:none}
+.btn.line{background:var(--surface);color:var(--ink);border:1px solid var(--line);box-shadow:0 1px 2px rgba(6,60,50,.07)}
+.btn.line:hover{border-color:var(--accent);filter:none}
+.lead{color:var(--muted);margin:0 0 22px;max-width:62ch}
+.method{display:flex;list-style:none;padding:0;margin:0 0 22px;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--surface)}
+.method li{flex:1;padding:10px 12px;font-size:12.5px;color:var(--faint);border-right:1px solid var(--line);display:flex;gap:8px;align-items:center;min-width:0}
+.method li:last-child{border-right:0}
+.method li b{font-family:var(--mono);font-weight:400;font-size:11px}
+.method li span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.method li.now{background:var(--accent-soft);color:var(--accent)}
+.method li.done{color:var(--ink)}
+.method li.done b{color:var(--accent)}
+.runs{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:10px}
+.rcol{text-align:center}
+.rcol .t{font-family:var(--mono);font-size:11.5px;color:var(--muted);margin-bottom:8px;white-space:nowrap}
+.rcol .box{height:72px;background:var(--panel);border-radius:4px;position:relative;overflow:hidden}
+.rcol .box i{position:absolute;left:0;right:0;bottom:0;height:0;background:linear-gradient(to top,var(--btn),var(--accent));transition:height .45s cubic-bezier(.2,.7,.2,1)}
+.rcol .s{font-family:var(--mono);font-size:11.5px;margin-top:8px;color:var(--muted)}
+.axislabels{display:flex;justify-content:space-between;font-size:12px;color:var(--faint);margin-top:10px}
+.result{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:28px;margin-top:28px;align-items:start}
+.plot{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px}
+.plot svg{width:100%;height:auto;display:block}
+.law{font-family:var(--serif);font-size:38px;line-height:1.1;margin:8px 0 6px}
+.law sup{font-size:.55em}
+.verdict{font-size:14px;color:var(--muted);margin:10px 0 0}
+.verdict b{color:var(--ink);font-weight:500}
+.status{font-family:var(--mono);font-size:13px;color:var(--accent);margin-top:20px}
+.disclaimer{display:flex;gap:28px;padding:22px 0;border-top:1px solid var(--line);font-size:13px;color:var(--muted);align-items:baseline}
+.disclaimer .mono{flex-shrink:0}
+
+.cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:28px 28px 24px;display:flex;flex-direction:column}
+.card .row{align-items:flex-start}
+.card .glyph{width:30px;height:30px;color:var(--accent)}
+.card h3{font-family:var(--serif);font-weight:400;font-size:34px;margin:20px 0 6px;line-height:1.05}
+.card .desc{color:var(--muted);margin:0 0 20px;padding-bottom:20px;border-bottom:1px solid var(--line)}
+.card .appr{margin:6px 0 22px}
+.card .foot{margin-top:auto;display:flex;justify-content:space-between;align-items:center;gap:12px}
+.card .foot .k{font-family:var(--mono);font-size:12px;color:var(--muted)}
+.note{color:var(--muted);font-size:13.5px;margin:22px 0 48px}
+
+.nb{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:48px;padding-bottom:56px}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0 26px}
+.chip{padding:7px 12px;border:1px solid var(--line);background:var(--surface);border-radius:4px;font-family:var(--mono);font-size:12px;cursor:pointer;text-align:left}
+.chip:hover{border-color:var(--accent);color:var(--accent)}
+.field{display:block;margin-bottom:20px}
+.field .lbl{display:block;margin-bottom:8px;font-family:var(--mono);font-size:12.5px;color:var(--muted)}
+textarea{width:100%;min-height:96px;resize:vertical;padding:12px 14px;border:1px solid var(--line);background:var(--surface);border-radius:6px;font-size:15px;line-height:1.5}
+textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 18%,transparent)}
+.formfoot{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.formfoot small{font-family:var(--mono);color:var(--faint);font-size:11.5px}
+.pill{display:inline-block;padding:3px 7px;border:1px solid var(--line);border-radius:3px;font-family:var(--mono);font-size:10.5px;letter-spacing:.05em;color:var(--muted);vertical-align:middle;margin-left:8px}
+.nb-title{display:flex;align-items:center;font-family:var(--serif);font-size:30px;margin:0}
+.note-card{border-top:1px solid var(--line);padding-top:30px}
+.note-card h3{font-family:var(--serif);font-weight:400;font-size:36px;line-height:1.1;margin:10px 0 12px}
+.note-card .sum{color:var(--muted);margin:0 0 22px;max-width:60ch}
+.eq{font-family:var(--serif);font-style:italic;font-size:30px;padding:18px 20px;background:var(--panel);border-radius:8px;margin:0 0 20px;overflow-x:auto}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:24px;border-top:1px solid var(--line);padding-top:20px;margin-top:4px}
+.split h5{margin:0 0 6px;font-family:var(--mono);font-weight:400;font-size:11.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--accent)}
+.split h5.g{color:var(--gold)}
+.split p,.split ol,.split dl{margin:0;font-size:14px;color:var(--muted)}
+.split ol{padding-left:18px}
+.split li{margin-bottom:5px}
+.vars{display:grid;grid-template-columns:auto 1fr;gap:6px 12px}
+.vars dt{font-family:var(--mono);font-size:12.5px;color:var(--ink);white-space:nowrap}
+.vars dd{margin:0}
+.unc{margin-top:20px;padding:16px 18px;background:var(--panel);border-radius:8px;font-size:14px;color:var(--muted)}
+.unc b{display:block;color:var(--ink);font-weight:500;margin-bottom:4px}
+.thinking{display:inline-flex;align-items:center;gap:10px;font-family:var(--mono);font-size:13px;color:var(--accent)}
+.thinking i{width:8px;height:8px;border-radius:50%;background:var(--accent);animation:pulse 1s ease-in-out infinite}
+@keyframes pulse{50%{transform:scale(.5);opacity:.4}}
+.err{color:var(--rose);font-size:14px}
+
+.token-hero{display:grid;grid-template-columns:auto 1fr;gap:44px;align-items:center;padding:56px 0 40px}
+.token-hero img{width:200px;height:200px}
+.grid4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border:1px solid var(--line);border-radius:12px;background:var(--surface);overflow:hidden}
+.grid4 > div{padding:26px 24px;border-right:1px solid var(--line)}
+.grid4 > div:last-child{border-right:0}
+.num{font-family:var(--serif);font-size:48px;color:var(--accent);line-height:1}
+.grid4 h4,.model h4{margin:14px 0 6px;font-size:16px;font-weight:500}
+.grid4 p,.model p{margin:0;color:var(--muted);font-size:14px}
+.loopnote{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:13.5px;margin:14px 0 0}
+.loopnote svg{width:16px;height:16px;color:var(--accent)}
+.model{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:0;margin-top:22px;position:relative}
+.model > div{padding:0 22px 0 0;position:relative}
+.model .dot{width:28px;height:28px;border-radius:50%;border:1px solid var(--accent);display:grid;place-items:center;font-family:var(--mono);font-size:11px;color:var(--accent);background:var(--bg);position:relative;z-index:1}
+.model::before{content:"";position:absolute;left:14px;right:14%;top:14px;height:1px;background:var(--line)}
+.features{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-top:1px solid var(--line);margin-top:24px}
+.features div{padding:22px 24px 22px 0;border-bottom:1px solid var(--line)}
+.features h4{margin:0 0 6px;font-size:15px;font-weight:500;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.features p{margin:0;color:var(--muted);font-size:13.5px}
+.tag{font-family:var(--mono);font-size:10px;letter-spacing:.05em;padding:2px 6px;border-radius:3px;background:var(--accent-soft);color:var(--accent);text-transform:uppercase}
+.tag.soon{background:var(--panel);color:var(--faint)}
+.sect{padding:48px 0}
+.sect > p{color:var(--muted);max-width:62ch;margin:0 0 24px}
+
+footer.bottom{border-top:1px solid var(--line)}
+footer .wrap{display:flex;justify-content:space-between;align-items:center;padding-top:22px;padding-bottom:26px;gap:16px;flex-wrap:wrap}
+footer .fb{font-family:var(--serif);font-size:20px;color:var(--muted)}
+[data-view]{display:none}
+[data-view].show{display:block}
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:6px;font-size:13px;opacity:0;pointer-events:none;transition:.2s}
+.toast.on{opacity:1;transform:translateX(-50%)}
+
+@media (max-width:1100px){
+  .lab{grid-template-columns:1fr 1fr}
+  .stage{grid-column:1/-1;order:-1;border:0}
+  .lab .side:last-child{border-left:1px solid var(--line)}
+  .features{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .method li span{display:none}
+  .method li.now span{display:inline}
+}
+@media (max-width:860px){
+  .hero,.below,.nb,.token-hero,.result{grid-template-columns:1fr}
+  .below .right{border-left:0;padding-left:0;border-top:1px solid var(--line);padding-top:32px}
+  .cards{grid-template-columns:1fr}
+  .grid4{grid-template-columns:1fr 1fr}
+  .grid4 > div:nth-child(2){border-right:0}
+  .grid4 > div:nth-child(-n+2){border-bottom:1px solid var(--line)}
+  .model{grid-template-columns:1fr;gap:18px}
+  .model::before{display:none}
+  nav.main{position:absolute;top:76px;left:0;right:0;flex-direction:column;background:var(--bg);border-bottom:1px solid var(--line);padding:10px clamp(16px,4vw,64px);display:none}
+  nav.main.open{display:flex}
+  .icon-btn.menu-btn{display:grid}
+  .token-hero img{width:130px;height:130px}
+}
+@media (max-width:620px){
+  .topbar .x-btn .lbl{display:none}
+  .topbar .x-btn .lbl{display:none}
+  .lab{grid-template-columns:1fr}
+  .lab .side:last-child{border-left:0;border-top:1px solid var(--line)}
+  .canvas-box{min-height:400px}
+  .runs{grid-template-columns:repeat(4,minmax(0,1fr))}
+  .features,.split{grid-template-columns:1fr}
+  .features div{padding-right:0}
+  .disclaimer{flex-direction:column;gap:6px}
+    .head-row{flex-direction:column}
+  .hint{display:none}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+.tools{display:flex;gap:4px;align-items:center;flex-wrap:wrap}
+.sep{width:1px;height:18px;background:#0B4A4A;margin:0 4px}
+.seg{display:inline-flex;border:1px solid #0F5E55;border-radius:7px;overflow:hidden;background:#05322F}
+.seg button{display:inline-flex;align-items:center;gap:6px;border:0;background:transparent;color:#9BC9C0;font-size:12.5px;padding:6px 10px;cursor:pointer;white-space:nowrap}
+.seg button svg{width:14px;height:14px}
+.seg button:hover{color:#fff}
+.seg button[aria-pressed="true"]{background:#0E7A68;color:#fff}
+.seg.sm button{font-family:var(--mono);font-size:11px;padding:4px 8px}
+.foot-r{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.tip{position:absolute;pointer-events:none;background:rgba(14,3,46,.92);border:1px solid #1C6B63;color:#E6FFF8;font-size:12px;padding:5px 9px;border-radius:6px;white-space:nowrap;transform:translate(12px,-50%);z-index:3}
+.tip b{font-weight:500;color:#FFE1A8}
+.follow{position:absolute;left:16px;top:16px;display:inline-flex;align-items:center;gap:8px;background:rgba(11,94,82,.85);border:1px solid #1BA48C;color:#fff;font-size:12px;padding:6px 10px;border-radius:20px;cursor:pointer;z-index:3}
+.follow svg{width:12px;height:12px}
+.fire{position:absolute;right:16px;bottom:14px;display:inline-flex;align-items:center;gap:8px;background:linear-gradient(180deg,#19C9A4,#0A7F6B);border:0;color:#04231F;font-size:13px;font-weight:600;padding:9px 14px;border-radius:8px;cursor:pointer;box-shadow:0 6px 22px -6px rgba(25,201,164,.8);z-index:3}
+.fire:hover{filter:brightness(1.12)}
+.fire svg{width:14px;height:14px}
+.follow[hidden],.tip[hidden],.presets[hidden]{display:none}
+@media (min-width:1101px){ .lab{height:min(880px,calc(100vh - 100px));min-height:640px} .lab .side{overflow-y:auto;scrollbar-width:thin} .lab .canvas-box{min-height:0} }
+.presets{display:flex;flex-wrap:wrap;gap:6px;margin-top:16px}
+.presets .chip{font-size:11px;padding:5px 8px}
+.partinfo h5{margin:0 0 6px;font-family:var(--serif);font-weight:400;font-size:22px;color:var(--ink);line-height:1.1}
+.partinfo p{margin:0 0 12px;font-size:13px;color:var(--muted);line-height:1.5}
+.partinfo dl{margin-bottom:10px}
+.partinfo dd{white-space:normal}
+.partinfo .fact{font-size:12.5px;color:var(--accent);margin:8px 0 0}
+.opt{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:7px 0;font-size:13.5px;cursor:pointer;width:100%;background:none;border:0;text-align:left}
+.opt .sw{width:30px;height:18px;border-radius:10px;background:var(--line);position:relative;flex-shrink:0;transition:background .15s}
+.opt .sw::after{content:"";position:absolute;left:2px;top:2px;width:14px;height:14px;border-radius:50%;background:var(--surface);box-shadow:0 1px 2px rgba(0,0,0,.25);transition:transform .15s}
+.opt[aria-checked="true"] .sw{background:var(--btn)}
+.opt[aria-checked="true"] .sw::after{transform:translateX(12px)}
+.opt small{display:block;color:var(--faint);font-size:12px}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap topbar">
+    <a class="brand" href="#lab" aria-label="Synthesize home"><img src="logo.png" alt=""><span>Synthesize</span></a>
+    <nav class="main" id="nav" aria-label="Main">
+      <a href="#lab" data-link="lab">Discovery lab</a>
+      <a href="#experiments" data-link="experiments">Experiments</a>
+      <a href="#notebook" data-link="notebook">Research notebook</a>
+      <a href="#token" data-link="token">$SYNTH</a>
+    </nav>
+    <div style="display:flex;gap:8px;align-items:center">
+      <a class="x-btn" href="https://x.com/SynthesizeFun" target="_blank" rel="noopener noreferrer" aria-label="Follow Synthesize on X"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg><span class="lbl">@SynthesizeFun</span></a>
+      <button class="icon-btn menu-btn" id="menuBtn" aria-label="Open menu" aria-expanded="false" aria-controls="nav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+    </div>
+  </div>
+</header>
+
+<main>
+<section data-view="lab">
+  <div class="wrap">
+    <div class="hero">
+      <div><div class="kicker mono">Synthesize / autonomous pharmacology laboratory</div><h1>Design molecules.<em>Discover medicine.</em></h1></div>
+      <div class="hero-side">
+        <p>Design a compound, dock it into a target, follow it through the body, and let an AI pharmacologist find the relationship behind the results. Every part of every experiment is labelled.</p>
+        <a class="textlink" href="#experiments">Browse the experiments <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M9 7h8v8"/></svg></a>
+      </div>
+    </div>
+
+    <div class="lab">
+      <aside class="side">
+        <div class="row"><span class="mono">01 / Set up the experiment</span></div>
+        <h3>Choose an experiment</h3>
+        <ul class="cond" id="expList"></ul>
+        <div class="mono label">The setup</div>
+        <p class="txt" id="setupTxt"></p>
+        <div class="mono label">Hypothesis</div>
+        <p class="txt strong" id="hypTxt"></p>
+        <div class="ctrl">
+          <div class="presets" id="presets"></div>
+          <div id="sliders"></div>
+          <div class="mono label" style="margin-top:22px">Options</div>
+          <div id="opts"></div>
+          <div class="lawrow"><span>Expected law</span><b id="lawTxt"></b></div>
+          <p class="ctrl-note" id="ctrlNote"></p>
+        </div>
+      </aside>
+
+      <div class="stage">
+        <div class="stage-head">
+          <span class="mono" id="stageLabel">Live simulation</span>
+          <div class="tools">
+            <div class="seg" role="group" aria-label="Pointer mode">
+              <button id="modeRotate" aria-pressed="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 3a9 9 0 1 0 9 9"/><path d="M21 3v6h-6"/></svg>Rotate</button>
+              <button id="modeAct" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M5 3l14 8-6 2-2 6z"/></svg><span id="actLabel">Interact</span></button>
+            </div>
+            <span class="sep"></span>
+            <button class="icon-btn" id="zoomOut" aria-label="Zoom out"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="6"/><path d="M8.5 11h5M20 20l-4.5-4.5"/></svg></button>
+            <button class="icon-btn" id="zoomIn" aria-label="Zoom in"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="6"/><path d="M8.5 11h5M11 8.5v5M20 20l-4.5-4.5"/></svg></button>
+            <button class="icon-btn" id="viewReset" aria-label="Reset view"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M12 12l8-4.5M12 12v9M12 12L4 7.5"/></svg></button>
+            <button class="icon-btn" id="spinBtn" aria-label="Auto-rotate" aria-pressed="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><ellipse cx="12" cy="12" rx="9" ry="4"/><path d="M17 15.5l2.5.5-.5 2.5"/></svg></button>
+            <span class="sep"></span>
+            <button class="icon-btn" id="pauseBtn" aria-label="Pause"></button>
+            <button class="icon-btn" id="restartBtn" aria-label="Restart the experiment"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 12a8 8 0 1 0 2.4-5.7"/><path d="M4 4v4h4"/></svg></button>
+          </div>
+        </div>
+        <div class="canvas-box" id="canvasBox">
+          <canvas id="stage" tabindex="0" aria-label="3D pharmacology simulation. Drag or arrow keys to rotate, shift-drag to pan, scroll or plus and minus to zoom, space to pause, F to run the experiment action, M to switch pointer mode."></canvas>
+          <div class="banner" id="banner"></div>
+          <div class="tip" id="tip" hidden></div>
+          <button class="follow" id="followChip" hidden><span id="followTxt"></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+          <button class="fire" id="fireBtn"></button>
+          <div class="hint" id="hint"></div>
+        </div>
+        <div class="stage-foot">
+          <div class="legend" id="legend"></div>
+          <div class="foot-r">
+            <div class="seg sm" role="group" aria-label="Simulation speed" id="speedSeg">
+              <button data-sp="0.25">¼×</button><button data-sp="0.5">½×</button><button data-sp="1" aria-pressed="true">1×</button><button data-sp="2">2×</button><button data-sp="4">4×</button>
+            </div>
+            <span class="mono" id="countTxt"></span>
+          </div>
+        </div>
+      </div>
+
+      <aside class="side">
+        <span class="mono">02 / Observe</span>
+        <h3>The measurements</h3>
+        <div class="metric"><div class="name"><span id="m1n"></span></div><div class="val" id="m1v" style="color:var(--accent)">—</div><div class="mono sub" id="m1s"></div></div>
+        <div class="metric"><div class="name"><span id="m2n"></span></div><div class="val" id="m2v" style="color:var(--gold)">—</div><div class="mono sub" id="m2s"></div></div>
+        <div class="metric"><div class="name"><span id="m3n"></span><span class="mono" id="m3v"></span></div><canvas class="spark" id="spark" aria-hidden="true"></canvas></div>
+        <div class="inspector">
+          <h4><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 8V4h4M16 4h4v4M20 16v4h-4M8 20H4v-4"/></svg><span id="inspTitle">Inspector</span></h4>
+          <div id="inspector"><p class="empty">Click an object to inspect it</p></div>
+        </div>
+      </aside>
+    </div>
+
+    <div class="below">
+      <div>
+        <div class="head-row">
+          <div><span class="mono">03 / Find the relationship</span><h2>Let the agent screen.</h2></div>
+          <button class="btn" id="runBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 5l11 7-11 7z"/></svg>Run screen</button>
+        </div>
+        <p class="lead" id="agentLead">Eight simulated runs. One fit: the relationship that best explains them.</p>
+        <ol class="method" id="method">
+          <li data-s="0"><b>1</b><span>Hypothesis</span></li>
+          <li data-s="1"><b>2</b><span>Design</span></li>
+          <li data-s="2"><b>3</b><span>Simulate</span></li>
+          <li data-s="3"><b>4</b><span>Analyse</span></li>
+          <li data-s="4"><b>5</b><span>Refine</span></li>
+        </ol>
+        <div class="runs" id="runs"></div>
+        <div class="axislabels"><span id="xLab"></span><span id="yLab"></span></div>
+        <div class="status" id="agentStatus">Ready to run</div>
+        <div class="result" id="result" hidden>
+          <div class="plot" id="plot"></div>
+          <div><span class="mono v">Candidate law</span><div class="law" id="lawOut"></div><div class="mono" id="fitOut"></div><p class="verdict" id="verdict"></p></div>
+        </div>
+      </div>
+      <div class="right">
+        <span class="mono">Beyond the simulation</span>
+        <h2>What if you started <em>from a target?</em></h2>
+        <p class="lead">Describe a disease target in plain words. The research notebook proposes a candidate compound, the properties to aim for, and the experiment that would test it.</p>
+        <a class="btn line" href="#notebook">Open research notebook <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M9 7h8v8"/></svg></a>
+      </div>
+    </div>
+    <div class="disclaimer"><span class="mono">Simulation, not medicine</span><span>Synthesize is a computational research platform, not a source of validated medicines. Nothing here is medical advice, and any promising result would need laboratory testing, preclinical studies and clinical trials before any claim of safety or effectiveness.</span></div>
+  </div>
+</section>
+
+<section data-view="experiments">
+  <div class="wrap">
+    <div class="hero">
+      <div><div class="kicker mono">The experiment library / 04</div><h1>Four stages.<em>One pipeline.</em></h1></div>
+      <div class="hero-side"><p>Design, make, test, dose. Each experiment is a stage of early discovery, and each hides a relationship the research agent can rediscover from simulated data.</p></div>
+    </div>
+    <div class="cards" id="cards"></div>
+    <p class="note">Values come from computational models, not laboratory measurements.</p>
+  </div>
+</section>
+
+<section data-view="notebook">
+  <div class="wrap">
+    <div class="hero">
+      <div><div class="kicker mono">The research notebook</div><h1>Start with a target.<em>Design a candidate.</em></h1></div>
+      <div class="hero-side"><p>Every answer here is a hypothesis to test, not a medicine. Any candidate would still need laboratory testing, preclinical studies and clinical trials.</p></div>
+    </div>
+    <div class="nb">
+      <div>
+        <p class="nb-title">Your target <span class="pill">AI molecule generator</span></p>
+        <p style="margin:10px 0 0">Describe a disease target or a therapeutic goal. The AI proposes a candidate design, the properties to aim for, and the experiment that would test it.</p>
+        <div class="chips">
+          <button class="chip" data-preset="0">Selective kinase inhibitor</button>
+          <button class="chip" data-preset="1">Gram-negative antibiotic</button>
+          <button class="chip" data-preset="2">Brain-penetrant compound</button>
+          <button class="chip" data-preset="3">Once-daily dosing</button>
+        </div>
+        <label class="field"><span class="lbl">Target or therapeutic goal</span><textarea id="fQ" placeholder="What do you want the compound to do?"></textarea></label>
+        <label class="field"><span class="lbl">Constraints (optional)</span><textarea id="fK" placeholder="Route, selectivity, known liabilities"></textarea></label>
+        <div class="formfoot"><small>Hypotheses, not medicines</small><button class="btn" id="theoryBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>Design a candidate</button></div>
+      </div>
+      <div class="note-card" id="theoryOut">
+        <span class="mono v">Research brief / awaiting target</span>
+        <h3>Every medicine starts as a guess.</h3>
+        <p class="sum">A good candidate names what it must bind, what it must avoid, and the property most likely to sink it. The simulation is where the guess meets the numbers.</p>
+        <div class="split">
+          <div><h5>Candidate</h5><p>What should the molecule look like?</p></div>
+          <div><h5 class="g">Biggest risk</h5><p>What would sink it first?</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section data-view="token">
+  <div class="wrap">
+    <div class="token-hero">
+      <img src="logo.png" alt="Synthesize logo: a hexagonal molecular ring drawn in teal particles with a glowing cyan core and green nodes">
+      <div>
+        <div class="kicker mono">$SYNTH</div>
+        <h1>Design the compounds.<em>Reward the discoveries.</em></h1>
+        <p style="color:var(--muted);max-width:56ch;margin:18px 0 0">$SYNTH is the proposed utility token for Synthesize: spent on advanced molecular generation, screening runs and AI research agents, with a proposed share of platform fees cycling back to researchers who produce reproducible computational results.</p>
+      </div>
+    </div>
+    <div class="sect" style="padding-top:8px">
+      <span class="mono">The flywheel</span>
+      <h2>Discovery, in a loop.</h2>
+      <div class="grid4" style="margin-top:22px">
+        <div><div class="num">01</div><h4>Design compounds</h4><p>Users generate and customise experimental molecules.</p></div>
+        <div><div class="num">02</div><h4>Spend $SYNTH</h4><p>Access advanced simulations, screening tools and AI agents.</p></div>
+        <div><div class="num">03</div><h4>Generate research</h4><p>Experiments produce candidate compounds and computational findings.</p></div>
+        <div><div class="num">04</div><h4>Reward discoveries</h4><p>Proposed platform fees fund buybacks and research incentives.</p></div>
+      </div>
+      <p class="loopnote"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 12a8 8 0 0 1 14-5.3L20 9"/><path d="M20 4v5h-5"/><path d="M20 12a8 8 0 0 1-14 5.3L4 15"/><path d="M4 20v-5h5"/></svg>Step 04 feeds back into step 01. Fee shares and buybacks are proposals, not commitments.</p>
+    </div>
+    <div class="sect">
+      <span class="mono">The discovery process</span>
+      <h2>How a candidate is earned.</h2>
+      <p>The research agent in the lab follows these five steps on every run.</p>
+      <div class="model">
+        <div><div class="dot">1</div><h4>Identify the target</h4><p>Select a protein, receptor or disease pathway.</p></div>
+        <div><div class="dot">2</div><h4>Generate candidates</h4><p>AI proposes molecular structures for screening.</p></div>
+        <div><div class="dot">3</div><h4>Simulate interactions</h4><p>Predict binding, selectivity and pharmacology.</p></div>
+        <div><div class="dot">4</div><h4>Optimise compounds</h4><p>Agents refine designs using model feedback.</p></div>
+        <div><div class="dot">5</div><h4>Publish research</h4><p>Share reproducible results and candidate hypotheses.</p></div>
+      </div>
+    </div>
+    <div class="sect" style="padding-top:8px">
+      <span class="mono">What the lab does</span>
+      <h2>Eight instruments, one laboratory.</h2>
+      <div class="features">
+        <div><h4>AI molecule generator</h4><p>Turn a therapeutic goal into candidate structures with predicted properties.</p></div>
+        <div><h4>Virtual synthesis lab</h4><p>Run reagents through a flask and see how heat, concentration and catalysts change yield.</p></div>
+        <div><h4>Drug interaction simulator</h4><p>Dock compounds into a target pocket and watch occupancy build and fall.</p></div>
+        <div><h4>Pharmacology engine</h4><p>Follow absorption, distribution, metabolism and excretion through the body.</p></div>
+        <div><h4>Disease target explorer</h4><p>Compare on-target and off-target binding to see where side effects come from.</p></div>
+        <div><h4>Autonomous research agents</h4><p>Agents design runs, screen compounds, analyse results and refine designs.</p></div>
+        <div><h4>Compound marketplace</h4><p>Publish, share and license molecular models, datasets and experiment setups.</p></div>
+        <div><h4>Discovery leaderboard</h4><p>Compete on predicted affinity, selectivity, drug-likeness and reproducibility.</p></div>
+      </div>
+    </div>
+    <div class="disclaimer"><span class="mono">Not financial or medical advice</span><span>$SYNTH describes a proposed token model. Nothing here is an offer, an investment recommendation or a promise of returns, and nothing here is medical advice. Computational results are not validated medicines.</span></div>
+  </div>
+</section>
+</main>
+
+<footer class="bottom"><div class="wrap"><span class="fb">Synthesize</span><div class="foot-links"><span class="mono">Design molecules. Simulate treatments.</span><a class="x-btn" href="https://x.com/SynthesizeFun" target="_blank" rel="noopener noreferrer" aria-label="Synthesize on X"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>Follow on X</a></div></div></footer>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+
+(function(){
+"use strict";
+const $=s=>document.querySelector(s), $$=s=>Array.from(document.querySelectorAll(s));
+const reduced=matchMedia("(prefers-reduced-motion: reduce)").matches;
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+function toast(m){const t=$("#toast");t.textContent=m;t.classList.add("on");clearTimeout(toast._t);toast._t=setTimeout(()=>t.classList.remove("on"),2200);}
+let seed=11; const rnd=()=>{seed=(seed*1664525+1013904223)>>>0;return seed/4294967296;};
+const gauss=()=>{let u=0,v=0;while(!u)u=rnd();while(!v)v=rnd();return Math.sqrt(-2*Math.log(u))*Math.cos(TAU*v);};
+const TAU=Math.PI*2;
+const C={teal:"#1FBFA8",cyan:"#3DE0FF",lime:"#2BE784",blue:"#6FC8FF",gold:"#FFD166",white:"#FFFFFF",rose:"#FF7AA8",dim:"#17706A",uv:"#2BE784",mag:"#3DE0FF"};
+
+/* routing */
+const VIEWS=["lab","experiments","notebook","token"];
+function route(){
+  let v=(location.hash||"#lab").slice(1); if(!VIEWS.includes(v)) v="lab";
+  $$("[data-view]").forEach(s=>s.classList.toggle("show",s.dataset.view===v));
+  $$("nav.main a").forEach(a=>{if(a.dataset.link===v)a.setAttribute("aria-current","page");else a.removeAttribute("aria-current");});
+  $("#nav").classList.remove("open"); $("#menuBtn").setAttribute("aria-expanded","false");
+  window.scrollTo(0,0); if(v==="lab") requestAnimationFrame(resize);
+}
+addEventListener("hashchange",route);
+$("#menuBtn").addEventListener("click",()=>{const o=!$("#nav").classList.contains("open");$("#nav").classList.toggle("open",o);$("#menuBtn").setAttribute("aria-expanded",o);});
+
+/* ---------- 3D camera ---------- */
+const cv=$("#stage"), ctx=cv.getContext("2d");
+let W=800,H=540,DPR=1;
+const RW=200, CAM=820;
+const VIEW0={yaw:.6,pitch:-.42,zoom:1.1};
+let view={yaw:.6,pitch:-.42,zoom:1.1,px:0,py:0,tx:0,ty:0,tz:0,auto:!reduced,idleAt:0,follow:null};
+let rot={cy:1,sy:0,cp:1,sp:0}, vs=1;
+function prepView(){rot.cy=Math.cos(view.yaw);rot.sy=Math.sin(view.yaw);rot.cp=Math.cos(view.pitch);rot.sp=Math.sin(view.pitch);vs=Math.min(W,H)/(RW*2.4)*view.zoom;}
+function proj(x,y,z,o){
+  x-=view.tx; y-=view.ty; z-=view.tz;
+  const x1=x*rot.cy+z*rot.sy, z1=-x*rot.sy+z*rot.cy;
+  const y2=y*rot.cp-z1*rot.sp, z2=y*rot.sp+z1*rot.cp;
+  const f=CAM/Math.max(60,CAM-z2); o=o||{}; o.x=W/2+view.px+x1*f*vs; o.y=H/2+view.py-y2*f*vs; o.f=f; o.z=z2; o.k=f*vs; return o;
+}
+function unproj(sx,sy){
+  const x1=(sx-W/2-view.px)/vs, y2=-(sy-H/2-view.py)/vs, z2=0;
+  const y=y2*rot.cp+z2*rot.sp, z1=-y2*rot.sp+z2*rot.cp;
+  return [x1*rot.cy-z1*rot.sy+view.tx, y+view.ty, x1*rot.sy+z1*rot.cy+view.tz];
+}
+function camDir(){ const y=1*rot.sp, z1=1*rot.cp; return [-z1*rot.sy, y, z1*rot.cy]; } // world vector pointing toward viewer
+const depthA=z=>0.35+0.65*Math.min(1,Math.max(0,(z+RW)/(2*RW)));
+const sprites={};
+function hexA(col,a){ const n=parseInt(col.slice(1),16); return `rgba(${n>>16&255},${n>>8&255},${n&255},${a})`; }
+function sprite(col){
+  if(sprites[col]) return sprites[col];
+  const s=document.createElement("canvas"); s.width=s.height=64; const g=s.getContext("2d");
+  const gr=g.createRadialGradient(32,32,0,32,32,32);
+  gr.addColorStop(0,"rgba(255,255,255,1)"); gr.addColorStop(0.12,col); gr.addColorStop(0.35,hexA(col,.35)); gr.addColorStop(1,hexA(col,0));
+  g.fillStyle=gr; g.fillRect(0,0,64,64); return sprites[col]=s;
+}
+function glow(x,y,r,col,a){ if(r<0.3) return; ctx.globalAlpha=Math.max(0,Math.min(1,a??1)); ctx.drawImage(sprite(col),x-r,y-r,r*2,r*2); ctx.globalAlpha=1; }
+const _p={},_q={};
+function line3(a,b,col,alpha,w){ proj(a[0],a[1],a[2],_p); proj(b[0],b[1],b[2],_q); ctx.strokeStyle=hexA(col,alpha*depthA((_p.z+_q.z)/2)); ctx.lineWidth=w||1; ctx.beginPath(); ctx.moveTo(_p.x,_p.y); ctx.lineTo(_q.x,_q.y); ctx.stroke(); }
+function poly3(pts,col,alpha,w){ if(pts.length<2) return; ctx.strokeStyle=hexA(col,alpha); ctx.lineWidth=w||1; ctx.beginPath(); pts.forEach((p,i)=>{proj(p[0],p[1],p[2],_p); i?ctx.lineTo(_p.x,_p.y):ctx.moveTo(_p.x,_p.y);}); ctx.stroke(); }
+function ring3(fn,n,col,alpha,w){ const pts=[]; for(let i=0;i<=n;i++) pts.push(fn(i/n)); poly3(pts,col,alpha,w); }
+function arrow2(x0,y0,x1,y1,col,a,w){ const ang=Math.atan2(y1-y0,x1-x0), L=Math.hypot(x1-x0,y1-y0); if(L<2) return; const hs=Math.min(8,L*.4);
+  ctx.strokeStyle=hexA(col,a); ctx.fillStyle=hexA(col,a); ctx.lineWidth=w||1.4; ctx.beginPath(); ctx.moveTo(x0,y0); ctx.lineTo(x1,y1); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x1-hs*Math.cos(ang-.45),y1-hs*Math.sin(ang-.45)); ctx.lineTo(x1-hs*Math.cos(ang+.45),y1-hs*Math.sin(ang+.45)); ctx.closePath(); ctx.fill(); }
+function selRing(x,y,r){ ctx.strokeStyle="rgba(255,255,255,.85)"; ctx.lineWidth=1.3; ctx.setLineDash([3,3]); ctx.beginPath(); ctx.arc(x,y,r,0,TAU); ctx.stroke(); ctx.setLineDash([]); }
+const dl=rows=>"<dl>"+rows.map(([k,v])=>`<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join("")+"</dl>";
+const norm=v=>{const l=Math.hypot(v[0],v[1],v[2])||1;return [v[0]/l,v[1]/l,v[2]/l];};
+const cross=(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]];
+
+let scen=null, sel=null, hover=null, flash=0, paused=false, speed=1, mode="rotate";
+const P=k=>scen.params.find(p=>p.k===k).val;
+const O=k=>scen.options.find(o=>o.k===k).val;
+function showBanner(t){ const b=$("#banner"); b.textContent=t; b.classList.add("on"); clearTimeout(showBanner._t); showBanner._t=setTimeout(()=>b.classList.remove("on"),1800); }
+
+/* ================= 1. Orbital gravity ================= */
+const GM0=1.9e6;
+const gravity={
+  id:"gravity", name:"Orbital gravity", icon:"orbit",
+  setup:"Bodies orbit a star in a gravity field you control. Launch new bodies, add a second star, or let every body pull on every other.",
+  hyp:"Orbital period grows as a power of orbit radius.",
+  desc:"Bodies circle a star under a force you define. Slingshot new bodies into orbit, warp spacetime, and let the agent rediscover Kepler’s third law, or the law of your altered universe.",
+  lawShort:"Kepler’s third law",
+  law(){return "T ∝ r^"+((P("p")+1)/2).toFixed(2);},
+  note:"Changing a constant mid-flight bends existing orbits. Restart to relaunch on circular orbits.",
+  params:[{k:"G",label:"Gravity strength G",min:.5,max:2,step:.05,val:1,fmt:v=>v.toFixed(2)+"×"},{k:"p",label:"Force falls off as 1/rᵖ",min:1.5,max:3,step:.05,val:2,fmt:v=>"p = "+v.toFixed(2)}],
+  options:[{k:"grid",label:"Spacetime grid",help:"Warped by the potential",val:true},{k:"binary",label:"Binary star",help:"Two stars share the centre",val:false,reset:true},{k:"mutual",label:"Mutual gravity",help:"Bodies pull on each other",val:false},{k:"trails",label:"Orbit trails",val:true}],
+  actLabel:"Launch", actHint:"Drag from any point to slingshot a body. Tap for a circular orbit.", fireLabel:"Launch body",
+  legend:[["Star",C.gold],["Body",C.mag],["Launched",C.cyan],["Spacetime",C.uv]],
+  followable:true,
+  K(){return GM0*P("G")*Math.pow(100,P("p")-2);},
+  init(){
+    const K=this.K(), p=P("p"); this.stars=[]; this.bodies=[]; this.nid=0; this.drag=null;
+    if(O("binary")){ const s=45, v=Math.sqrt(s*K*0.5/Math.pow(2*s,p)); this.stars.push({x:s,y:0,z:0,vx:0,vy:0,vz:v,m:.5},{x:-s,y:0,z:0,vx:0,vy:0,vz:-v,m:.5}); }
+    else this.stars.push({x:0,y:0,z:0,vx:0,vy:0,vz:0,m:1});
+    for(let i=0;i<14;i++){
+      const r=(O("binary")?95:45)+(O("binary")?100:140)*(i/13)+rnd()*6, th=rnd()*TAU, inc=(rnd()-.5)*0.7, node=rnd()*TAU;
+      const v=Math.sqrt(K/Math.pow(r,p-1));
+      let pos=[r*Math.cos(th),0,r*Math.sin(th)], vel=[-Math.sin(th)*v,0,Math.cos(th)*v];
+      const rx=a=>[a[0],a[1]*Math.cos(inc)-a[2]*Math.sin(inc),a[1]*Math.sin(inc)+a[2]*Math.cos(inc)];
+      const ry=a=>[a[0]*Math.cos(node)+a[2]*Math.sin(node),a[1],-a[0]*Math.sin(node)+a[2]*Math.cos(node)];
+      pos=ry(rx(pos)); vel=ry(rx(vel)); this.addBody(pos,vel,[C.mag,C.uv,C.blue,C.white][i%4]);
+    }
+  },
+  addBody(pos,vel,col){ const b={id:++this.nid,x:pos[0],y:pos[1],z:pos[2],vx:vel[0],vy:vel[1],vz:vel[2],trail:[],state:"orbit",col,m:2+rnd()*2,born:performance.now()}; this.bodies.push(b);
+    const live=this.bodies.filter(b=>b.state==="orbit"); if(live.length>40){ live[0].state="removed"; } this.bodies=this.bodies.filter(b=>b.state!=="removed"); return b; },
+  step(dt){
+    const K=this.K(), p=P("p"), n=8, h=dt/n, mutual=O("mutual"), live=this.bodies.filter(b=>b.state==="orbit"), mb=0.006;
+    const acc=(x,y,z,self)=>{ let ax=0,ay=0,az=0;
+      for(const s of this.stars){ if(s===self) continue; const dx=x-s.x,dy=y-s.y,dz=z-s.z, r=Math.sqrt(dx*dx+dy*dy+dz*dz+16), a=-K*s.m/Math.pow(r,p+1); ax+=a*dx;ay+=a*dy;az+=a*dz; }
+      if(mutual) for(const o of live){ if(o===self) continue; const dx=x-o.x,dy=y-o.y,dz=z-o.z, r=Math.sqrt(dx*dx+dy*dy+dz*dz+64), a=-K*mb/Math.pow(r,p+1); ax+=a*dx;ay+=a*dy;az+=a*dz; }
+      return [ax,ay,az]; };
+    for(let s=0;s<n;s++){
+      if(this.stars.length>1) for(const st of this.stars){ const a=acc(st.x,st.y,st.z,st); st.vx+=a[0]*h; st.vy+=a[1]*h; st.vz+=a[2]*h; }
+      for(const b of live){ const a=acc(b.x,b.y,b.z,b); b.vx+=a[0]*h; b.vy+=a[1]*h; b.vz+=a[2]*h; }
+      if(this.stars.length>1) for(const st of this.stars){ st.x+=st.vx*h; st.y+=st.vy*h; st.z+=st.vz*h; }
+      for(const b of live){ b.x+=b.vx*h; b.y+=b.vy*h; b.z+=b.vz*h; }
+    }
+    for(const b of live){
+      const r=Math.hypot(b.x,b.y,b.z);
+      if(r>560){ b.state="escaped"; if(sel===b) sel=null; continue; }
+      if(this.stars.some(s=>Math.hypot(b.x-s.x,b.y-s.y,b.z-s.z)<9)){ b.state="absorbed"; flash=.6; if(sel===b) sel=null; continue; }
+      b.trail.push([b.x,b.y,b.z]); if(b.trail.length>140) b.trail.shift();
+    }
+  },
+  potential(x,z){ const K=this.K(), p=P("p"); let ph=0; for(const s of this.stars){ const r=Math.max(18,Math.hypot(x-s.x,z-s.z)); ph+=K*s.m/((p-1)*Math.pow(r,p-1)); } return Math.min(150,ph*0.0019); },
+  draw(now){
+    ctx.globalCompositeOperation="lighter";
+    if(O("grid")){
+      const N=14, E=270, base=-70;
+      for(let i=0;i<=N;i++){ const u=-E+2*E*i/N, a=[], b=[];
+        for(let j=0;j<=28;j++){ const v=-E+2*E*j/28; a.push([u,base-this.potential(u,v),v]); b.push([v,base-this.potential(v,u),u]); }
+        poly3(a,C.uv,.22,1); poly3(b,C.uv,.22,1); }
+    }
+    line3([0,-260,0],[0,260,0],C.uv,.14,2);
+    if(O("trails")) for(const b of this.bodies){ if(b.state!=="orbit") continue; ctx.lineWidth=1.4;
+      for(let i=1;i<b.trail.length;i++){ const a=b.trail[i-1], c=b.trail[i]; proj(a[0],a[1],a[2],_p); proj(c[0],c[1],c[2],_q);
+        ctx.strokeStyle=hexA(b.col,0.5*(i/b.trail.length)*depthA(_q.z)); ctx.beginPath(); ctx.moveTo(_p.x,_p.y); ctx.lineTo(_q.x,_q.y); ctx.stroke(); } }
+    const pulse=1+0.04*Math.sin(now/300);
+    for(const s of this.stars){ proj(s.x,s.y,s.z,_p); const k=Math.sqrt(s.m); glow(_p.x,_p.y,70*_p.k*pulse*k,C.uv,.55); glow(_p.x,_p.y,30*_p.k*k,C.gold,.95); glow(_p.x,_p.y,14*_p.k*k,C.white,1); }
+    const order=this.bodies.filter(b=>b.state==="orbit").map(b=>{proj(b.x,b.y,b.z,_p);b.sx=_p.x;b.sy=_p.y;b.sz=_p.z;b.sk=_p.k;return b;}).sort((a,b)=>a.sz-b.sz);
+    for(const b of order){ const fresh=Math.max(0,1-(now-b.born)/700); glow(b.sx,b.sy,(b.m*5+fresh*14)*b.sk,b.col,depthA(b.sz)); }
+    if(flash>0){ for(const s of this.stars){ proj(s.x,s.y,s.z,_p); glow(_p.x,_p.y,60*_p.k*flash,C.white,flash); } }
+    ctx.globalCompositeOperation="source-over";
+    for(const b of order){ if(b===sel) selRing(b.sx,b.sy,b.m*3*b.sk+8); else if(b===hover) selRing(b.sx,b.sy,b.m*3*b.sk+6); }
+    if(this.drag && this.drag.cur){ const d=this.drag; proj(...d.p0,_p); const x0=_p.x,y0=_p.y; proj(...d.cur,_q);
+      ctx.setLineDash([4,4]); arrow2(x0,y0,_q.x,_q.y,C.cyan,.9,1.6); ctx.setLineDash([]); glow(x0,y0,14,C.cyan,.9);
+      // predicted path
+      const K=this.K(), p=P("p"); let x=d.p0[0],y=d.p0[1],z=d.p0[2]; let [vx,vy,vz]=d.vel; const pts=[[x,y,z]], h=0.02;
+      for(let i=0;i<160;i++){ for(let s=0;s<3;s++){ let ax=0,ay=0,az=0; for(const st of this.stars){ const dx=x-st.x,dy=y-st.y,dz=z-st.z,r=Math.sqrt(dx*dx+dy*dy+dz*dz+16),a=-K*st.m/Math.pow(r,p+1); ax+=a*dx;ay+=a*dy;az+=a*dz; } vx+=ax*h;vy+=ay*h;vz+=az*h;x+=vx*h;y+=vy*h;z+=vz*h; } pts.push([x,y,z]); if(Math.hypot(x,y,z)>520) break; }
+      ctx.setLineDash([2,5]); poly3(pts,C.cyan,.6,1.2); ctx.setLineDash([]);
+    }
+  },
+  launchVel(p0,cur,screenD){
+    const K=this.K(), p=P("p");
+    if(screenD<8){ const r=Math.max(20,Math.hypot(...p0)); const dir=norm(cross(camDir(),p0)); const v=Math.sqrt(K/Math.pow(r,p-1)); return [dir[0]*v,dir[1]*v,dir[2]*v]; }
+    return [(cur[0]-p0[0])*2.2,(cur[1]-p0[1])*2.2,(cur[2]-p0[2])*2.2];
+  },
+  act:{
+    down(x,y){ const p0=unproj(x,y); gravity.drag={p0,cur:null,sx:x,sy:y,vel:gravity.launchVel(p0,p0,0)}; return true; },
+    move(x,y){ const d=gravity.drag; if(!d) return; d.cur=unproj(x,y); d.vel=gravity.launchVel(d.p0,d.cur,Math.hypot(x-d.sx,y-d.sy)); },
+    up(x,y){ const d=gravity.drag; if(!d) return; const cur=unproj(x,y); const v=gravity.launchVel(d.p0,cur,Math.hypot(x-d.sx,y-d.sy)); gravity.drag=null;
+      const b=gravity.addBody(d.p0,v,C.cyan); showBanner(`Body #${b.id} launched`); }
+  },
+  fire(){ const r=60+rnd()*120, th=rnd()*TAU, pos=[r*Math.cos(th),(rnd()-.5)*30,r*Math.sin(th)], K=this.K(), p=P("p"), v=Math.sqrt(K/Math.pow(r,p-1))*(0.85+rnd()*0.3);
+    const b=this.addBody(pos,[-Math.sin(th)*v,0,Math.cos(th)*v],C.cyan); showBanner(`Body #${b.id} launched`); },
+  pick(x,y){ let best=null,bd=22; for(const b of this.bodies){ if(b.state!=="orbit"||b.sx==null)continue; const d=Math.hypot(b.sx-x,b.sy-y); if(d<bd){bd=d;best=b;} } return best; },
+  label(b){ const r=Math.hypot(b.x,b.y,b.z); return `<b>Body #${b.id}</b> · ${r.toFixed(0)} u out`; },
+  pos(b){ return b.state==="orbit"?[b.x,b.y,b.z]:null; },
+  stats(){ const live=this.bodies.filter(b=>b.state==="orbit"); let T=0,v=0;
+    live.forEach(b=>{ const r=Math.hypot(b.x,b.y,b.z), sp=Math.hypot(b.vx,b.vy,b.vz), vr=(b.x*b.vx+b.y*b.vy+b.z*b.vz)/r, vt=Math.sqrt(Math.max(1e-6,sp*sp-vr*vr)); T+=TAU*r/vt; v+=sp; });
+    return {live:live.length,esc:this.bodies.filter(b=>b.state==="escaped").length,abs:this.bodies.filter(b=>b.state==="absorbed").length,T:live.length?T/live.length:0,v:live.length?v/live.length:0}; },
+  metrics(){ const s=this.stats(); return [
+    {n:"Bodies in orbit",v:String(s.live),s:`${s.esc} escaped · ${s.abs} fell in`},
+    {n:"Mean orbital period",v:s.live?s.T.toFixed(1)+"s":"—",s:"simulation seconds"},
+    {n:"Mean orbital speed",v:s.v.toFixed(0)+" u/s",spark:s.v}]; },
+  count(){return `${this.bodies.filter(b=>b.state==="orbit").length} bodies · ${this.stars.length} ${this.stars.length>1?"stars":"star"}`;},
+  inspectTitle:"Body inspector", emptyHint:"Click a body to inspect it, double-click to follow it",
+  inspect(b){ if(!b||b.state!=="orbit") return null; const r=Math.hypot(b.x,b.y,b.z), sp=Math.hypot(b.vx,b.vy,b.vz), vr=(b.x*b.vx+b.y*b.vy+b.z*b.vz)/r, vt=Math.sqrt(Math.max(1e-6,sp*sp-vr*vr));
+    const K=this.K(), p=P("p"), E=sp*sp/2-(Math.abs(p-1)<1e-6?0:K/((p-1)*Math.pow(r,p-1)));
+    return dl([["Body","#"+String(b.id).padStart(2,"0")],["Distance",r.toFixed(0)+" u"],["Speed",sp.toFixed(0)+" u/s"],["Period est.",(TAU*r/vt).toFixed(1)+" s"],["Radial drift",(vr>0?"+":"")+vr.toFixed(1)+" u/s"],["Orbit",E<0?"bound":"escaping"]]); },
+  agent:{x:"Orbit radius r",y:"Period T",xs:[40,55,72,90,110,130,155,180],xf:v=>v.toFixed(0),yf:v=>v.toFixed(2)+"s",hyp:"T = k · rⁿ",
+    design:"Eight circular orbits from r = 40 to 180 around a single star, each timed over one full revolution.",
+    measure(r){ const K=gravity.K(), p=P("p"); let x=r,y=0,vx=0,vy=Math.sqrt(K/Math.pow(r,p-1)); const Te=TAU*r/vy, h=Te/6000; let ang=0,prev=0,t=0;
+      for(let i=0;i<20000;i++){ const rr=Math.hypot(x,y), a=-K/Math.pow(rr,p+1); vx+=a*x*h; vy+=a*y*h; x+=vx*h; y+=vy*h; t+=h;
+        const th=Math.atan2(y,x); let d=th-prev; if(d<-Math.PI)d+=TAU; if(d>Math.PI)d-=TAU; prev=th; ang+=d; if(ang>=TAU) return t-(ang-TAU)/(d/h); } return t; },
+    expect(){ const p=P("p"), n=(p+1)/2; return {n,text:Math.abs(p-2)<.001?"Matches <b>Kepler’s third law</b>: T² ∝ r³, the law of our own solar system.":`Matches the expected exponent (p+1)/2 = ${n.toFixed(2)} for a 1/r<sup>${p.toFixed(2)}</sup> force. <b>This is not the law of our universe</b>, it is the law of yours.`}; } }
+};
+
+/* ================= 2. Particle collider ================= */
+const SPD=230, KB=60, BAR=165, MUR=250;
+const SPECIES={e:{name:"e",label:"Electron",col:[C.mag,C.gold]},mu:{name:"μ",label:"Muon",col:[C.cyan,C.cyan]},pi:{name:"π",label:"Pion",col:[C.uv,C.gold]}};
+const collider={
+  id:"collider", name:"Particle collider", icon:"collide",
+  setup:"Two beams meet inside a layered detector. Each collision sprays electrons, muons and pions that curl in the magnetic field.",
+  hyp:"Track radius grows as a power of particle momentum.",
+  desc:"Fire the beams, watch tracks curl through the tracker, deposit energy in the calorimeter and punch out to the muon chambers. The agent finds how bending depends on momentum.",
+  lawShort:"Magnetic rigidity", law(){return "r = p / qB";},
+  note:"Stronger fields curl tracks tighter. Higher energy makes more, stiffer tracks.",
+  params:[{k:"E",label:"Beam energy",min:1,max:10,step:.5,val:5,fmt:v=>v.toFixed(1)+" TeV"},{k:"B",label:"Magnetic field B",min:.5,max:3,step:.1,val:1.4,fmt:v=>v.toFixed(1)+" T"}],
+  options:[{k:"auto",label:"Automatic collisions",help:"A crossing every 1.7 s",val:true},{k:"calo",label:"Calorimeter",help:"Energy towers where tracks stop",val:true},{k:"muons",label:"Muon chambers",help:"Muons punch through",val:true},{k:"jets",label:"Jet events",help:"Tracks collimate into jets",val:false}],
+  actLabel:"Fire", actHint:"Tap anywhere to fire the beams. Click a track in rotate mode to inspect it.", fireLabel:"Fire beams",
+  legend:[["e / π⁺",C.mag],["e / π⁻",C.gold],["Muon",C.cyan],["Beam",C.blue]],
+  followable:false,
+  init(){ this.tracks=[]; this.towers=[]; this.events=0; this.timer=0.6; this.last=null; this.pending=0; this.nid=0; },
+  collide(){
+    const E=P("E"), N=Math.round(6+E*2.6+rnd()*6), ev={id:++this.events,n:N,pos:0,neg:0,mu:0,pmax:0,E}, jets=O("jets");
+    const axes=[]; if(jets){ const nj=rnd()<.6?2:3; const a0=norm([gauss(),gauss(),gauss()*0.6]); axes.push(a0); axes.push([-a0[0],-a0[1],-a0[2]]); if(nj===3) axes.push(norm([gauss(),gauss(),gauss()*.6])); }
+    for(let i=0;i<N;i++){
+      let dir; if(jets){ const ax=axes[i%axes.length]; dir=norm([ax[0]+gauss()*.22,ax[1]+gauss()*.22,ax[2]+gauss()*.22]); }
+      else { const u=rnd()*1.6-.8, th=rnd()*TAU, s=Math.sqrt(1-u*u); dir=[s*Math.cos(th),s*Math.sin(th),u]; }
+      const q=rnd()<.5?1:-1, rs=rnd(), sp=rs<.12?"mu":rs<.3?"e":"pi";
+      const p=Math.min(320,Math.max(6,(6+22*-Math.log(1-rnd()*0.999))*E/4*(jets?1.4:1)));
+      const col=sp==="mu"?C.cyan:(q>0?C.mag:C.gold);
+      this.tracks.push({id:++this.nid,ev:ev.id,sp,x:0,y:0,z:0,vx:dir[0]*SPD,vy:dir[1]*SPD,vz:dir[2]*SPD,q,p,pts:[[0,0,0]],age:0,done:false,col});
+      q>0?ev.pos++:ev.neg++; if(sp==="mu") ev.mu++; ev.pmax=Math.max(ev.pmax,p);
+    }
+    const tr=this.tracks.slice(-N); ev.r=tr.reduce((a,t)=>a+Math.hypot(t.vx,t.vy)*t.p/(KB*P("B")),0)/N;
+    this.last=ev; flash=1;
+  },
+  fire(){ if(this.pending<=0) this.pending=0.45; },
+  step(dt){
+    if(this.pending>0){ this.pending-=dt; if(this.pending<=0){ this.pending=0; this.collide(); this.timer=1.7; } }
+    else if(O("auto")){ this.timer-=dt; if(this.timer<=0){ this.pending=0.45; this.timer=99; } }
+    const B=P("B"), mu=O("muons");
+    for(const t of this.tracks){ t.age+=dt; if(t.done) continue;
+      const n=3,h=dt/n; for(let s=0;s<n;s++){ const w=t.q*B*KB/t.p*h, c=Math.cos(w), sn=Math.sin(w); const vx=t.vx*c-t.vy*sn, vy=t.vx*sn+t.vy*c; t.vx=vx;t.vy=vy; t.x+=t.vx*h;t.y+=t.vy*h;t.z+=t.vz*h; }
+      t.pts.push([t.x,t.y,t.z]);
+      const R=Math.hypot(t.x,t.y), lim=(t.sp==="mu"&&mu)?MUR:BAR;
+      if(R>lim||Math.abs(t.z)>(t.sp==="mu"&&mu?260:175)||t.age>2.2){ t.done=true;
+        if(t.sp!=="mu"||!mu){ if(R>BAR-5) this.towers.push({x:t.x,y:t.y,z:t.z,e:t.p,age:0,col:t.col}); } }
+    }
+    this.towers.forEach(w=>w.age+=dt); this.towers=this.towers.filter(w=>w.age<2.8);
+    this.tracks=this.tracks.filter(t=>t.age<3.2||t===sel);
+  },
+  draw(now){
+    ctx.globalCompositeOperation="lighter";
+    const ringZ=[-175,-88,0,88,175];
+    for(const z of ringZ) ring3(t=>[Math.cos(t*TAU)*BAR,Math.sin(t*TAU)*BAR,z],64,C.dim,.5,1);
+    for(const r of [40,90]) for(const z of [-175,175]) ring3(t=>[Math.cos(t*TAU)*r,Math.sin(t*TAU)*r,z],40,C.dim,.35,1);
+    for(let i=0;i<12;i++){ const a=i/12*TAU; line3([Math.cos(a)*BAR,Math.sin(a)*BAR,-175],[Math.cos(a)*BAR,Math.sin(a)*BAR,175],C.dim,.28,1); }
+    if(O("muons")){ for(const z of [-260,-130,0,130,260]) ring3(t=>[Math.cos(t*TAU)*MUR,Math.sin(t*TAU)*MUR,z],72,C.cyan,.16,1);
+      for(let i=0;i<8;i++){ const a=i/8*TAU+.2; line3([Math.cos(a)*MUR,Math.sin(a)*MUR,-260],[Math.cos(a)*MUR,Math.sin(a)*MUR,260],C.cyan,.12,1); } }
+    line3([0,0,-320],[0,0,320],C.blue,.35,1.5);
+    if(this.pending>0){ const d=this.pending/0.45*320; proj(0,0,-d,_p); glow(_p.x,_p.y,16*_p.k,C.blue,.95); proj(0,0,d,_p); glow(_p.x,_p.y,16*_p.k,C.blue,.95); }
+    if(O("calo")) for(const w of this.towers){ const f=Math.max(0,1-w.age/2.8), R=Math.hypot(w.x,w.y)||1, L=Math.min(70,w.e*0.5)*f, ux=w.x/R, uy=w.y/R;
+      proj(w.x,w.y,w.z,_p); const x0=_p.x,y0=_p.y; proj(w.x+ux*L,w.y+uy*L,w.z,_q);
+      ctx.strokeStyle=hexA(C.gold,.75*f); ctx.lineWidth=Math.max(2,5*_p.k); ctx.beginPath(); ctx.moveTo(x0,y0); ctx.lineTo(_q.x,_q.y); ctx.stroke(); glow(_q.x,_q.y,10*_q.k,C.gold,f); }
+    for(const t of this.tracks){ const fade=t===sel?1:(t.age<2.2?1:Math.max(0,1-(t.age-2.2))); const hi=t===sel||t===hover;
+      ctx.lineWidth=hi?2.8:1.6; ctx.beginPath(); for(let i=0;i<t.pts.length;i++){ proj(t.pts[i][0],t.pts[i][1],t.pts[i][2],_p); i?ctx.lineTo(_p.x,_p.y):ctx.moveTo(_p.x,_p.y);} ctx.strokeStyle=hexA(hi?C.white:t.col,.85*fade); ctx.stroke();
+      proj(t.x,t.y,t.z,_p); t.sx=_p.x; t.sy=_p.y; glow(_p.x,_p.y,(t.done?6:9)*_p.k,t.col,fade); }
+    if(flash>0){ proj(0,0,0,_p); glow(_p.x,_p.y,90*_p.k*flash,C.gold,flash); glow(_p.x,_p.y,40*_p.k*flash,C.white,flash); }
+    ctx.globalCompositeOperation="source-over";
+  },
+  act:{ down(){return true;}, move(){}, up(){ collider.fire(); } },
+  pick(x,y){ let best=null,bd=16; for(const t of this.tracks){ if(t.sx==null) continue; for(let i=0;i<t.pts.length;i+=3){ proj(...t.pts[i],_p); const d=Math.hypot(_p.x-x,_p.y-y); if(d<bd){bd=d;best=t;} } } return best; },
+  tname(t){ const s=SPECIES[t.sp]; return s.name+(t.sp==="e"?(t.q>0?"⁺":"⁻"):(t.q>0?"⁺":"⁻")); },
+  label(t){ return `<b>${this.tname(t)}</b> ${SPECIES[t.sp].label.toLowerCase()} · p = ${t.p.toFixed(0)}`; },
+  pos(){return null;},
+  metrics(){ const e=this.last, live=this.tracks.filter(t=>!t.done).length;
+    return [{n:"Tracks this collision",v:e?String(e.n):"—",s:e?`collision #${e.id} · ${e.mu} muons`:"beams approaching"},
+      {n:"Mean track radius",v:e?e.r.toFixed(0)+" u":"—",s:`in a ${P("B").toFixed(1)} T field`},
+      {n:"Live tracks",v:String(live),spark:live}]; },
+  count(){return `${this.events} collisions`;},
+  inspectTitle:"Track inspector", emptyHint:"Click a track to inspect it",
+  inspect(t){ if(t&&this.tracks.includes(t)){ const pt=Math.hypot(t.vx,t.vy)/SPD*t.p; return dl([["Particle",this.tname(t)+" "+SPECIES[t.sp].label.toLowerCase()],["Collision","#"+t.ev],["Momentum p",t.p.toFixed(1)],["Transverse p",pt.toFixed(1)],["Bend radius",(Math.hypot(t.vx,t.vy)*t.p/(KB*P("B"))).toFixed(0)+" u"],["Charge",t.q>0?"+1":"−1"]]); }
+    const e=this.last; if(!e) return null; return dl([["Last collision","#"+e.id],["Beam energy",e.E.toFixed(1)+" TeV"],["Tracks",e.n],["Charge + / −",e.pos+" / "+e.neg],["Muons",e.mu],["Top momentum",e.pmax.toFixed(0)]]); },
+  agent:{x:"Momentum p",y:"Track radius r",xs:[10,15,22,33,50,75,110,165],xf:v=>v.toFixed(0),yf:v=>v.toFixed(0)+"u",hyp:"r = k · pⁿ",
+    design:"Eight single particles fired across the field, momentum 10 to 165, radius fitted from two full turns.",
+    measure(p){ const B=P("B"); let x=0,y=0,vx=SPD,vy=0,mx=0,mn=0; const w=B*KB/p, n=2400, h=2*TAU/w/n, c=Math.cos(w*h), s=Math.sin(w*h);
+      for(let i=0;i<n;i++){ const a=vx*c-vy*s, b=vx*s+vy*c; vx=a; vy=b; x+=vx*h; y+=vy*h; mx=Math.max(mx,y); mn=Math.min(mn,y); } return (mx-mn)/2; },
+    expect(){ return {n:1,text:"Matches <b>r = p / qB</b>: radius grows in direct proportion to momentum, which is how real detectors measure it."}; } }
+};
+
+/* ================= 3. Quantum double slit ================= */
+const LQ=210, XB=-60, XS=150;
+const quantum={
+  id:"quantum", name:"Quantum double slit", icon:"wave", view0:{yaw:-0.55,pitch:-0.28,zoom:1.05},
+  setup:"Particles leave a source one at a time and pass two slits. Watch where each one lands, then put a detector on the slits.",
+  hyp:"Fringe spacing grows as a power of wavelength.",
+  desc:"Fire single particles at two slits and watch interference assemble dot by dot. Switch on the which-path detector and the pattern collapses.",
+  lawShort:"Two-slit interference", law(){return O("which")||O("single")?"no fringes expected":"Δy = λL / d";},
+  note:"Changing a setting clears the screen so a fresh pattern can build.",
+  params:[{k:"lam",label:"Wavelength λ",min:2,max:8,step:.1,val:5,fmt:v=>v.toFixed(1)+" u"},{k:"d",label:"Slit separation d",min:20,max:70,step:1,val:40,fmt:v=>v.toFixed(0)+" u"}],
+  options:[{k:"which",label:"Which-path detector",help:"Measure which slit each particle took",val:false,reset:true},{k:"single",label:"Close one slit",val:false,reset:true},{k:"waves",label:"Wavefronts",help:"Show the probability wave",val:true},{k:"curve",label:"Predicted intensity",val:true}],
+  resetOnChange:true,
+  actLabel:"Fire", actHint:"Tap anywhere to fire a burst of particles.", fireLabel:"Fire burst",
+  legend:[["In flight",C.blue],["Detection",C.gold],["Wavefront",C.cyan],["Apparatus",C.uv]],
+  followable:false,
+  env(y,lam){ const a=8, b=Math.PI*a*y/(lam*LQ); return b===0?1:Math.pow(Math.sin(b)/b,2); },
+  I(y,lam,d,which,single){ if(single) return this.env(y-d/2,lam); if(which) return 0.5*(this.env(y-d/2,lam)+this.env(y+d/2,lam));
+    return Math.pow(Math.cos(Math.PI*d*y/(lam*LQ)),2)*this.env(y,lam); },
+  Inow(y){ return this.I(y,P("lam"),P("d"),O("which"),O("single")); },
+  init(){ this.hits=[]; this.fly=[]; this.emit=0; this.total=0; this.rate=[]; this.burst=0; this.wt=0; },
+  spawn(){ const d=P("d"); let y=0; for(let k=0;k<80;k++){ y=(rnd()*2-1)*140; if(rnd()<this.Inow(y)) break; }
+    const z=(rnd()*2-1)*55, slit=O("single")?d/2:(rnd()<.5?-1:1)*d/2; this.fly.push({t:0,y,z,slit,zs:z*0.6,tag:O("which")}); },
+  fire(){ this.burst+=60; },
+  step(dt){
+    this.wt+=dt;
+    this.emit+=dt*(reduced?14:30);
+    while(this.emit>1){ this.emit--; this.spawn(); }
+    const nb=Math.min(this.burst,Math.ceil(dt*400)); for(let i=0;i<nb;i++) this.spawn(); this.burst-=nb;
+    for(const f of this.fly) f.t+=dt*1.6;
+    const landed=this.fly.filter(f=>f.t>=1); this.fly=this.fly.filter(f=>f.t<1);
+    const now=performance.now(); landed.forEach(f=>{ this.hits.push({y:f.y,z:f.z,b:now}); this.total++; this.rate.push(now); });
+    if(this.hits.length>3200) this.hits.splice(0,this.hits.length-3200);
+  },
+  spacing(){
+    if(this.hits.length<350||O("which")||O("single")) return null; const bins=new Array(140).fill(0);
+    this.hits.forEach(h=>{const i=Math.floor((h.y+140)/2); if(i>=0&&i<140) bins[i]++;});
+    const sm=bins.map((_,i)=>{let s=0,c=0;for(let j=-2;j<=2;j++){if(bins[i+j]!=null){s+=bins[i+j];c++;}}return s/c;});
+    const mx=Math.max(...sm), pk=[]; for(let i=1;i<139;i++) if(sm[i]>sm[i-1]&&sm[i]>=sm[i+1]&&sm[i]>mx*.35) pk.push(i*2-139);
+    if(pk.length<3) return null; const df=[]; for(let i=1;i<pk.length;i++) df.push(pk[i]-pk[i-1]); df.sort((a,b)=>a-b); return df[Math.floor(df.length/2)];
+  },
+  draw(now){
+    const d=P("d"), lam=P("lam"), single=O("single");
+    ctx.globalCompositeOperation="lighter";
+    proj(-190,0,0,_p); glow(_p.x,_p.y,26*_p.k,C.blue,.9); glow(_p.x,_p.y,10*_p.k,C.white,1);
+    const bz=70, by=130, sw=4;
+    const rect=(x,y0,y1,z0,z1,col,a)=>{ line3([x,y0,z0],[x,y1,z0],col,a);line3([x,y1,z0],[x,y1,z1],col,a);line3([x,y1,z1],[x,y0,z1],col,a);line3([x,y0,z1],[x,y0,z0],col,a); };
+    if(single){ rect(XB,-by,d/2-sw,-bz,bz,C.uv,.6); rect(XB,d/2+sw,by,-bz,bz,C.uv,.55); }
+    else { rect(XB,-by,-d/2-sw,-bz,bz,C.uv,.55); rect(XB,-d/2+sw,d/2-sw,-bz,bz,C.uv,.55); rect(XB,d/2+sw,by,-bz,bz,C.uv,.55); }
+    if(O("which")) for(const s of single?[d/2]:[-d/2,d/2]){ proj(XB+6,s,bz+8,_p); glow(_p.x,_p.y,12*_p.k,C.rose,.9+.1*Math.sin(now/120)); ring3(t=>[XB+6,s+Math.cos(t*TAU)*9,Math.sin(t*TAU)*9+bz+8],20,C.rose,.7,1.2); }
+    rect(XS,-145,145,-85,85,C.uv,.5);
+    if(O("waves")){
+      const sp=lam*7, ph=(this.wt*45)%sp;
+      for(let x=-190+ph;x<XB;x+=sp) line3([x,-70,0],[x,70,0],C.cyan,.25,1);
+      if(!O("which")) for(const s of single?[d/2]:[-d/2,d/2]) for(let r=ph;r<LQ+40;r+=sp){ const a=Math.max(0,.32-r/900);
+        ring3(t=>{const ang=-Math.PI/2+t*Math.PI; return [XB+Math.cos(ang)*r,s+Math.sin(ang)*r,0];},36,C.cyan,a,1); }
+    }
+    if(O("curve")){ const pts=[]; for(let y=-140;y<=140;y+=1.5) pts.push([XS-this.Inow(y)*55,y,-85]); poly3(pts,C.gold,.75,1.6); }
+    for(const f of this.fly){ let x,y,z;
+      if(f.t<0.45){ const u=f.t/0.45; x=-190+(XB+190)*u; y=f.slit*u; z=f.zs*u; }
+      else { const u=(f.t-0.45)/0.55; x=XB+(XS-XB)*u; y=f.slit+(f.y-f.slit)*u; z=f.zs+(f.z-f.zs)*u; }
+      proj(x,y,z,_p); glow(_p.x,_p.y,7*_p.k,f.tag&&f.t>0.45?C.rose:C.blue,.85); }
+    for(const h of this.hits){ proj(XS,h.y,h.z,_p); const fresh=Math.max(0,1-(now-h.b)/600); glow(_p.x,_p.y,(3.2+6*fresh)*_p.k,fresh>0?C.white:C.gold,.75); }
+    ctx.globalCompositeOperation="source-over";
+  },
+  act:{ down(){return true;}, move(){}, up(){ quantum.fire(); } },
+  pick(){return null;}, label(){return "";}, pos(){return null;},
+  metrics(){ const now=performance.now(); this.rate=this.rate.filter(t=>now-t<1000); const s=this.spacing(), pred=P("lam")*LQ/P("d"), coll=O("which")||O("single");
+    return [{n:"Particles detected",v:String(this.total),s:"one at a time"},
+      {n:"Fringe spacing",v:coll?"none":(s?s.toFixed(0)+" u":"—"),s:coll?(O("which")?"path measured, interference gone":"one slit, no interference"):(s?`predicted ${pred.toFixed(1)} u`:"building the pattern")},
+      {n:"Detections per second",v:String(this.rate.length),spark:this.rate.length}]; },
+  count(){return `${this.hits.length} detections on screen`;},
+  inspectTitle:"Apparatus", emptyHint:"",
+  inspect(){ return dl([["Wavelength λ",P("lam").toFixed(1)+" u"],["Slit gap d",P("d").toFixed(0)+" u"],["Screen distance L",LQ+" u"],["Open slits",O("single")?"1":"2"],["Which-path",O("which")?"on":"off"],["In flight",this.fly.length]]); },
+  agent:{x:"Wavelength λ",y:"Fringe spacing Δy",xs:[2,2.8,3.6,4.4,5.2,6,6.8,7.6],xf:v=>v.toFixed(1),yf:v=>v.toFixed(1)+"u",hyp:"Δy = k · λⁿ",
+    design:"Eight wavelengths from 2.0 to 7.6 at fixed slit gap, fringe peaks located on a fine detector grid.",
+    measure(lam){ if(O("which")||O("single")) return NaN; const d=P("d"), pk=[]; const I=y=>quantum.I(y,lam,d,false,false); let a=I(-140), b=I(-139.95);
+      for(let y=-139.9;y<140;y+=0.05){ const c=I(y); if(b>a&&b>=c&&b>0.3) pk.push(y-0.05); a=b;b=c; }
+      const df=[]; for(let i=1;i<pk.length;i++) df.push(pk[i]-pk[i-1]); df.sort((x,y)=>x-y); return df[Math.floor(df.length/2)]; },
+    fail:"No fringes to measure. Knowing which slit each particle took, or closing a slit, removes the interference, so there is no spacing law to find. Switch the detector off and run again.",
+    expect(){ return {n:1,text:"Matches <b>Δy = λL / d</b>: spacing grows in step with wavelength. Single particles still build a wave pattern."}; } }
+};
+
+/* ================= 4. Expanding universe ================= */
+const cosmos={
+  id:"cosmos", name:"Expanding universe", icon:"cosmos",
+  setup:"Hundreds of galaxies ride an expanding space. Set the expansion rate and matter density, pick any galaxy as your home, and see what it sees.",
+  hyp:"Recession speed grows as a power of distance.",
+  desc:"Watch space stretch, push matter density past critical to trigger a big crunch, and observe from any galaxy. The agent rediscovers Hubble’s law.",
+  lawShort:"Hubble’s law", law(){return "v = H · d";},
+  note:"Above Ωm = 1 the universe eventually stops and recollapses.",
+  params:[{k:"H",label:"Expansion rate H₀",min:.1,max:.6,step:.01,val:.3,fmt:v=>v.toFixed(2)+" /s"},{k:"Om",label:"Matter density Ωm",min:0,max:2,step:.05,val:.3,fmt:v=>v.toFixed(2)}],
+  options:[{k:"arrows",label:"Hubble flow arrows",help:"Velocity seen from your galaxy",val:true},{k:"grid",label:"Comoving grid",help:"Space itself stretching",val:true},{k:"clusters",label:"Galaxy clusters",val:true,reset:true}],
+  actLabel:"Observe", actHint:"Tap a galaxy to observe the universe from it.", fireLabel:"Random observer",
+  legend:[["Galaxy",C.blue],["Your galaxy",C.gold],["Recession",C.mag]],
+  followable:true,
+  init(){ this.g=[]; const cl=O("clusters"), centers=[]; for(let i=0;i<7;i++){ const d=norm([gauss(),gauss(),gauss()]), r=Math.cbrt(rnd())*.8; centers.push([d[0]*r,d[1]*r,d[2]*r]); }
+    for(let i=0;i<320;i++){ let x,y,z;
+      if(i===0){x=y=z=0;}
+      else if(cl&&rnd()<.5){ const c=centers[i%7]; x=c[0]+gauss()*.09; y=c[1]+gauss()*.09; z=c[2]+gauss()*.09; }
+      else { const d=norm([gauss(),gauss(),gauss()]), r=Math.cbrt(rnd()); x=d[0]*r;y=d[1]*r;z=d[2]*r; }
+      this.g.push({id:i,x,y,z,pv:[(rnd()-.5)*.02,(rnd()-.5)*.02,(rnd()-.5)*.02],s:1+rnd()*2.4,col:[C.blue,C.white,C.uv,C.mag][i%4]}); }
+    this.obs=this.g[0]; this.start(); },
+  start(){ const Om=P("Om"), H=P("H"); this.a=0.3; this.t=0; this.adot=H*this.a*Math.sqrt(Math.max(0.001,Om/Math.pow(this.a,3)+(1-Om))); },
+  step(dt){ const H=P("H"), Om=P("Om"), a=this.a; const add=H*H*a*(-Om/(2*a*a*a)+(1-Om));
+    this.adot+=add*dt; this.a+=this.adot*dt; this.t+=dt;
+    this.g.forEach(g=>{g.x+=g.pv[0]*dt;g.y+=g.pv[1]*dt;g.z+=g.pv[2]*dt;});
+    if(this.a>1.85){ this.start(); showBanner("New universe"); }
+    else if(this.a<0.22&&this.adot<0){ flash=1; this.start(); showBanner("Big crunch, then a new universe"); } },
+  wpos(g){ const S=this.a*110; return [g.x*S,g.y*S,g.z*S]; },
+  draw(){
+    ctx.globalCompositeOperation="lighter"; const S=this.a*110, o=this.wpos(this.obs);
+    if(O("grid")){ const n=4; for(let i=0;i<=n;i++) for(let j=0;j<=n;j++){ const u=(-1+2*i/n)*S, v=(-1+2*j/n)*S;
+      line3([-S,u,v],[S,u,v],C.uv,.10,1); line3([u,-S,v],[u,S,v],C.uv,.10,1); line3([u,v,-S],[u,v,S],C.uv,.10,1); } }
+    const Hn=this.Hnow();
+    for(const g of this.g){ const w=this.wpos(g); proj(w[0],w[1],w[2],_p); g.sx=_p.x; g.sy=_p.y; g.sz=_p.z; g.sk=_p.k;
+      if(g===this.obs){ glow(_p.x,_p.y,28*_p.k,C.gold,1); glow(_p.x,_p.y,10*_p.k,C.white,1); }
+      else glow(_p.x,_p.y,g.s*4.2*_p.k,g.col,depthA(_p.z)*0.9); }
+    if(O("arrows")){ const scale=Math.min(1.6,0.9/Math.max(.05,Math.abs(Hn))); for(let i=0;i<this.g.length;i+=3){ const g=this.g[i]; if(g===this.obs) continue; const w=this.wpos(g), dx=w[0]-o[0],dy=w[1]-o[1],dz=w[2]-o[2];
+      const k=Hn*scale*0.55; proj(w[0],w[1],w[2],_p); const x0=_p.x,y0=_p.y; proj(w[0]+dx*k,w[1]+dy*k,w[2]+dz*k,_q);
+      arrow2(x0,y0,_q.x,_q.y,Hn>=0?C.mag:C.cyan,.45*depthA(_p.z),1); } }
+    if(sel && this.g.includes(sel) && sel!==this.obs){ ctx.strokeStyle=hexA(C.gold,.7); ctx.setLineDash([4,4]); ctx.lineWidth=1.2; ctx.beginPath(); ctx.moveTo(this.obs.sx,this.obs.sy); ctx.lineTo(sel.sx,sel.sy); ctx.stroke(); ctx.setLineDash([]); }
+    if(flash>0){ proj(...o,_p); glow(_p.x,_p.y,160*_p.k*flash,C.white,flash); }
+    ctx.globalCompositeOperation="source-over";
+    if(sel && this.g.includes(sel)) selRing(sel.sx,sel.sy,14);
+    if(hover && hover!==sel && this.g.includes(hover)) selRing(hover.sx,hover.sy,11);
+  },
+  setObserver(g){ this.obs=g; view.follow=g; showBanner(g.id===0?"Observing from the home galaxy":`Observing from galaxy #${g.id}`); updateFollowChip(); },
+  act:{ down(){return true;}, move(){}, up(x,y){ const g=cosmos.pick(x,y); if(g) cosmos.setObserver(g); } },
+  fire(){ this.setObserver(this.g[1+Math.floor(rnd()*(this.g.length-1))]); },
+  pick(x,y){ let best=null,bd=18; for(const g of this.g){ if(g.sx==null) continue; const d=Math.hypot(g.sx-x,g.sy-y); if(d<bd){bd=d;best=g;} } return best; },
+  dist(g){ const a=this.wpos(g), b=this.wpos(this.obs); return Math.hypot(a[0]-b[0],a[1]-b[1],a[2]-b[2]); },
+  label(g){ return g===this.obs?"<b>Your galaxy</b> · observer":`<b>Galaxy #${g.id}</b> · ${this.dist(g).toFixed(0)} u away`; },
+  pos(g){ return this.wpos(g); },
+  Hnow(){return this.adot/this.a;},
+  metrics(){ const Om=P("Om"), a=this.a, addot=P("H")**2*a*(-Om/(2*a*a*a)+(1-Om));
+    return [{n:"Scale factor a",v:this.a.toFixed(2),s:`universe age ${this.t.toFixed(1)} s`},
+      {n:"Hubble rate H(a)",v:this.Hnow().toFixed(2),s:this.adot<0?"universe contracting":(addot>0?"expansion accelerating":"expansion slowing")},
+      {n:"Hubble rate over time",v:"",spark:this.Hnow()}]; },
+  count(){return `${this.g.length} galaxies`;},
+  inspectTitle:"Galaxy inspector", emptyHint:"Click a galaxy to inspect it, double-click to follow it",
+  inspect(g){ if(!g) return null; if(g===this.obs) return dl([["Galaxy",g.id===0?"Home":"#"+g.id],["Role","observer"],["Sees","every galaxy receding"]]);
+    const d=this.dist(g), v=this.Hnow()*d; return dl([["Galaxy","#"+String(g.id).padStart(3,"0")],["Distance",d.toFixed(0)+" u"],["Recession",v.toFixed(1)+" u/s"],["Direction",v>=0?"moving away":"approaching"]]); },
+  agent:{x:"Distance d",y:"Recession speed v",xs:[20,35,50,70,90,115,145,180],xf:v=>v.toFixed(0),yf:v=>v.toFixed(1),hyp:"v = k · dⁿ",
+    design:"Eight galaxies at distances 20 to 180 from your galaxy, speeds measured from their change in distance over a short interval.",
+    begin(){ cosmos.aFix=cosmos.a; cosmos.adFix=cosmos.adot; },
+    measure(d){ const a=cosmos.aFix, ad=cosmos.adFix; if(ad<=0) return NaN; const dt=0.002, x=d/(a*110); return ((a+ad*dt)-a)*x*110/dt*(1+(rnd()-.5)*0.04); },
+    fail:"The universe is contracting right now, so galaxies approach instead of receding and a power law in speed can’t be fitted. Run again while it expands.",
+    expect(){ return {n:1,text:`Matches <b>Hubble’s law</b>: speed is proportional to distance, with slope ≈ H(a) = ${(cosmos.adFix/cosmos.aFix).toFixed(2)} at a = ${cosmos.aFix.toFixed(2)}. Any galaxy you observe from sees the same law.`}; } }
+};
+
+/* ---------- shared helpers ---------- */
+const SUPC={"-":"⁻","0":"⁰","1":"¹","2":"²","3":"³","4":"⁴","5":"⁵","6":"⁶","7":"⁷","8":"⁸","9":"⁹"};
+const sup=n=>String(n).split("").map(c=>SUPC[c]||c).join("");
+function sci(v,d=2){ if(v===0) return "0"; const e=Math.floor(Math.log10(Math.abs(v))); if(e>=-2&&e<5) return v.toLocaleString("en-US",{maximumFractionDigits:Math.max(0,d-Math.max(0,e))}); return (v/Math.pow(10,e)).toFixed(1)+"×10"+sup(e); }
+function makePills(host,items){
+  const pills=[]; ctx.font="500 12px "+getComputedStyle(document.body).fontFamily;
+  for(const l of items){ let ox=l.off?l.off[0]:0, oy=l.off?l.off[1]:0;
+    if(!ox&&!oy){ const dx=l.ax-W/2, dy=l.ay-H/2, dd=Math.hypot(dx,dy)||1; ox=dx/dd*95; oy=dy/dd*62; }
+    const tw=ctx.measureText(l.name).width+20; pills.push({l,ax:l.ax,ay:l.ay,x:l.ax+ox-(ox<0?tw:0),y:l.ay+oy-11,w:tw,h:22}); }
+  for(let it=0;it<30;it++) for(let i=0;i<pills.length;i++) for(let j=i+1;j<pills.length;j++){ const A=pills[i],B=pills[j];
+    if(A.x<B.x+B.w+4&&B.x<A.x+A.w+4&&A.y<B.y+B.h+4&&B.y<A.y+A.h+4){ const push=(Math.min(A.y+A.h,B.y+B.h)-Math.max(A.y,B.y)+4)/2+1; if(A.y<B.y){A.y-=push;B.y+=push;}else{A.y+=push;B.y-=push;} } }
+  for(const p of pills){ p.x=Math.max(6,Math.min(W-p.w-6,p.x)); p.y=Math.max(6,Math.min(H-p.h-46,p.y));
+    const on=sel&&sel.part===p.l.id, hv=hover&&hover.part===p.l.id, ex=p.x+(p.ax<p.x?0:p.ax>p.x+p.w?p.w:p.w/2), ey=p.y+p.h/2;
+    ctx.strokeStyle=on?"rgba(120,255,214,.95)":"rgba(150,235,220,.5)"; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(p.ax,p.ay); ctx.lineTo(ex,ey); ctx.stroke();
+    ctx.fillStyle=on?"#8CFFE0":"#CFF7EE"; ctx.beginPath(); ctx.arc(p.ax,p.ay,2.6,0,TAU); ctx.fill();
+    ctx.fillStyle=on?"rgba(10,88,76,.95)":hv?"rgba(8,64,58,.95)":"rgba(3,32,32,.85)"; ctx.strokeStyle=on?"#8CFFE0":"rgba(90,210,190,.65)";
+    ctx.beginPath(); ctx.roundRect?ctx.roundRect(p.x,p.y,p.w,p.h,11):ctx.rect(p.x,p.y,p.w,p.h); ctx.fill(); ctx.stroke();
+    ctx.fillStyle="#EAFFF8"; ctx.textBaseline="middle"; ctx.fillText(p.l.name,p.x+10,p.y+p.h/2+.5); }
+  host.pills=pills;
+}
+function pickPill(host,x,y){ if(!O("labels")) return null; for(const p of host.pills||[]) if(x>=p.x&&x<=p.x+p.w&&y>=p.y&&y<=p.y+p.h) return {part:p.l.id,name:p.l.name}; return null; }
+function partCard(name,d){ return `<div class="partinfo"><h5>${esc(name)}</h5><p>${esc(d[0])}</p>${d[1]?dl(d[1]):""}${d[2]?`<p class="fact">${esc(d[2])}</p>`:""}</div>`; }
+
+/* ================= 1. Molecule lab ================= */
+const GRP={
+  H:{sym:"H",col:C.white,r:3.4,mw:1.008,logp:0,tpsa:0,hbd:0,hba:0,rot:0,name:"Hydrogen"},
+  CH3:{sym:"CH₃",col:C.white,r:6.4,mw:15.03,logp:.56,tpsa:0,hbd:0,hba:0,rot:0,name:"Methyl"},
+  OH:{sym:"OH",col:C.rose,r:6,mw:17.01,logp:-.67,tpsa:20.2,hbd:1,hba:1,rot:1,name:"Hydroxyl"},
+  NH2:{sym:"NH₂",col:C.blue,r:6.4,mw:16.02,logp:-1.23,tpsa:26,hbd:2,hba:1,rot:1,name:"Amine"},
+  COOH:{sym:"COOH",col:C.gold,r:7.4,mw:45.02,logp:-.32,tpsa:37.3,hbd:1,hba:2,rot:2,name:"Carboxylic acid"},
+  CO:{sym:"C=O",col:C.gold,r:6.8,mw:28.01,logp:-.55,tpsa:17.1,hbd:0,hba:1,rot:1,name:"Carbonyl"},
+  F:{sym:"F",col:C.lime,r:5.2,mw:19,logp:.14,tpsa:0,hbd:0,hba:0,rot:0,name:"Fluorine"},
+  Cl:{sym:"Cl",col:C.lime,r:6.6,mw:35.45,logp:.71,tpsa:0,hbd:0,hba:0,rot:0,name:"Chlorine"},
+  CF3:{sym:"CF₃",col:C.lime,r:7.4,mw:69.01,logp:1.07,tpsa:0,hbd:0,hba:0,rot:1,name:"Trifluoromethyl"},
+  OMe:{sym:"OCH₃",col:C.rose,r:7,mw:31.03,logp:.02,tpsa:9.2,hbd:0,hba:1,rot:2,name:"Methoxy"},
+  SO2NH2:{sym:"SO₂NH₂",col:C.cyan,r:8,mw:80.08,logp:-1.82,tpsa:60.2,hbd:2,hba:3,rot:2,name:"Sulfonamide"},
+  N:{sym:"N",col:C.blue,r:6,mw:14.01,logp:-.4,tpsa:12.4,hbd:0,hba:1,rot:0,name:"Ring nitrogen"}
+};
+const CHAINS=[[],["CH2"],["CH2","CH2"],["CH2","CH2","CH2"]];
+const molecule={
+  id:"molecule", name:"Molecule lab", icon:"mol", view0:{yaw:.5,pitch:-.25,zoom:1.25},
+  setup:"Build a candidate compound atom group by atom group. Every part is labelled, and the predicted properties update as you design.",
+  hyp:"A molecule’s diffusion slows as a power of its molecular weight.",
+  desc:"A labelled, buildable drug molecule: aromatic scaffold, functional groups, rotatable bonds and polar surface, with live drug-likeness scoring.",
+  lawShort:"Stokes–Einstein diffusion", law(){return "D ∝ MW^(−1/3)";},
+  note:"Properties are computed from group contributions, the way early screening filters work.",
+  params:[{k:"rings",label:"Scaffold rings",min:1,max:3,step:1,val:2,fmt:v=>v+(v>1?" rings":" ring")},
+          {k:"chain",label:"Linker length",min:0,max:3,step:1,val:1,fmt:v=>v?v+" CH₂":"none"},
+          {k:"polar",label:"Polar character",min:0,max:1,step:.05,val:.4,fmt:v=>Math.round(v*100)+"%"}],
+  presets:[{label:"Lead-like",rings:1,chain:1,polar:.35},{label:"Drug-like",rings:2,chain:1,polar:.4},{label:"Too greasy",rings:3,chain:3,polar:.05},{label:"Too polar",rings:2,chain:0,polar:.95}],
+  options:[{k:"labels",label:"Labels",help:"Name every part",val:true},{k:"hydrogens",label:"Show hydrogens",val:false},
+    {k:"surface",label:"Van der Waals surface",val:false},{k:"polarity",label:"Colour by polarity",help:"Red polar, green greasy",val:false},
+    {k:"bonds",label:"Mark rotatable bonds",val:true},{k:"wiggle",label:"Thermal motion",val:true}],
+  actLabel:"Edit", actHint:"Click any group to cycle it: methyl, hydroxyl, amine, acid, halogen, methoxy, sulfonamide.", fireLabel:"Generate compound",
+  legend:[["Carbon",C.cyan],["Polar group",C.rose],["Basic nitrogen",C.blue],["Acid / carbonyl",C.gold],["Halogen",C.lime]],
+  followable:false,
+  build(){
+    const rings=P("rings"), chain=P("chain"), polar=P("polar");
+    this.atoms=[]; this.bonds=[]; this.groups=[];
+    const R=22, add=(x,y,z,t,ring)=>{ const a={id:this.atoms.length,x,y,z,t,ring,sym:t==="C"?"C":t}; this.atoms.push(a); return a; };
+    const ringAtoms=[];
+    for(let r=0;r<rings;r++){
+      const ox=r*R*1.73, arr=[];
+      for(let i=0;i<6;i++){ const an=i/6*TAU+(r%2?Math.PI/6:0); const x=ox+Math.cos(an)*R, y=Math.sin(an)*R, z=(rnd()-.5)*1.2;
+        let found=this.atoms.find(a=>a.ring!=null&&Math.hypot(a.x-x,a.y-y)<6);
+        arr.push(found||add(x,y,z,"C",r)); }
+      for(let i=0;i<6;i++){ const a=arr[i], b=arr[(i+1)%6]; if(!this.bonds.some(bd=>(bd.a===a&&bd.b===b)||(bd.a===b&&bd.b===a))) this.bonds.push({a,b,order:i%2?2:1,rot:false}); }
+      ringAtoms.push(arr);
+    }
+    if(polar>.65&&rings>0){ const a=ringAtoms[0][3]; a.t="N"; a.sym="N"; }
+    const free=[]; for(const arr of ringAtoms) for(const a of arr){ const deg=this.bonds.filter(b=>b.a===a||b.b===a).length; if(deg<3) free.push(a); }
+    const polarSet=["OH","NH2","COOH","OMe","SO2NH2","CO"], greasy=["CH3","Cl","F","CF3","CH3"];
+    const nSub=Math.min(free.length,2+rings);
+    for(let i=0;i<nSub;i++){
+      const a=free[Math.floor(i*free.length/nSub)]; const isPolar=rnd()<polar;
+      const key=isPolar?polarSet[Math.floor(rnd()*polarSet.length)]:greasy[Math.floor(rnd()*greasy.length)];
+      this.attach(a,key,i===0?chain:0);
+    }
+    let cx=0,cy=0,cz=0; for(const at of this.atoms){cx+=at.x;cy+=at.y;cz+=at.z;}
+    const n=this.atoms.length||1; cx/=n;cy/=n;cz/=n;
+    for(const at of this.atoms){at.x-=cx;at.y-=cy;at.z-=cz;}
+    this.hydro();
+  },
+  attach(anchor,key,chain){
+    const dir=norm([anchor.x-(this.atoms[0]?0:0),anchor.y,anchor.z+ (rnd()-.5)*.2]);
+    let px=anchor.x, py=anchor.y, pz=anchor.z, prev=anchor;
+    for(let c=0;c<chain;c++){ px+=dir[0]*17; py+=dir[1]*17; pz+=dir[2]*17+ (c%2?4:-4);
+      const a={id:this.atoms.length,x:px,y:py,z:pz,t:"C",sym:"C"}; this.atoms.push(a); this.bonds.push({a:prev,b:a,order:1,rot:true}); prev=a; }
+    const g=GRP[key]; const x=px+dir[0]*16, y=py+dir[1]*16, z=pz+dir[2]*16;
+    const node={id:this.atoms.length,x,y,z,t:"G",key,sym:g.sym,grp:g,anchor}; this.atoms.push(node);
+    this.bonds.push({a:prev,b:node,order:1,rot:g.rot>0});
+    this.groups.push(node);
+  },
+  hydro(){ this.hyd=[]; for(const a of this.atoms){ if(a.t!=="C") continue; const deg=this.bonds.filter(b=>b.a===a||b.b===a).reduce((s,b)=>s+b.order,0);
+      const n=Math.max(0,4-deg); for(let i=0;i<n;i++){ const an=rnd()*TAU, th=rnd()*Math.PI; this.hyd.push({a,dx:Math.sin(th)*Math.cos(an)*11,dy:Math.sin(th)*Math.sin(an)*11,dz:Math.cos(th)*11}); } } },
+  props(){
+    let mw=0, logp=0, tpsa=0, hbd=0, hba=0, rot=0, heavy=0;
+    for(const a of this.atoms){ if(a.t==="G"){ mw+=a.grp.mw; logp+=a.grp.logp; tpsa+=a.grp.tpsa; hbd+=a.grp.hbd; hba+=a.grp.hba; rot+=a.grp.rot; heavy+=Math.max(1,Math.round(a.grp.mw/14)); }
+      else if(a.t==="N"){ mw+=14.01; logp-=.6; tpsa+=12.9; hba+=1; heavy++; }
+      else { mw+=12.011; logp+=.3; heavy++; } }
+    mw+=this.hyd.length*1.008+heavy*0.4;
+    rot+=this.bonds.filter(b=>b.rot).length;
+    const viol=(mw>500?1:0)+(logp>5?1:0)+(hbd>5?1:0)+(hba>10?1:0);
+    const score=Math.max(0,Math.min(1, 1-(Math.abs(logp-2.2)/6)-(Math.abs(mw-330)/900)-(tpsa>140?.3:0)-(rot>10?.2:0)-viol*.18));
+    return {mw,logp,tpsa,hbd,hba,rot,heavy,viol,score};
+  },
+  init(){ this.t=0; this.build(); },
+  step(dt){ this.t+=dt; },
+  wig(a){ if(!O("wiggle")) return [a.x,a.y,a.z]; const p=this.t*2.4+a.id; return [a.x+Math.sin(p)*.9,a.y+Math.cos(p*1.3)*.9,a.z+Math.sin(p*.7)*.9]; },
+  atomCol(a){ if(O("polarity")){ const pol=a.t==="G"?(a.grp.tpsa>0?1:0):(a.t==="N"?1:0); return pol?C.rose:C.lime; }
+    if(a.t==="G") return a.grp.col; if(a.t==="N") return C.blue; return C.cyan; },
+  draw(now){
+    const pr=this.props();
+    for(const a of this.atoms){ const w=this.wig(a); proj(w[0],w[1],w[2],_q); a.sx=_q.x; a.sy=_q.y; a.sz=_q.z; a.sk=_q.k; a.wx=w; }
+    ctx.globalCompositeOperation="lighter";
+    if(O("surface")) for(const a of [...this.atoms].sort((x,y)=>x.sz-y.sz)) glow(a.sx,a.sy,(a.t==="G"?a.grp.r:7)*2.6*a.sk,this.atomCol(a),.12);
+    ctx.globalCompositeOperation="source-over";
+    for(const b of this.bonds){ const A=b.a, B=b.b; const dx=B.sx-A.sx, dy=B.sy-A.sy, dd=Math.hypot(dx,dy)||1, nx=-dy/dd, ny=dx/dd, k=(A.sk+B.sk)/2;
+      const lines=b.order===2?[-1.8*k,1.8*k]:[0];
+      for(const off of lines){ ctx.strokeStyle=hexA(C.teal,.9); ctx.lineWidth=Math.max(1.6,3.4*k); ctx.beginPath(); ctx.moveTo(A.sx+nx*off,A.sy+ny*off); ctx.lineTo(B.sx+nx*off,B.sy+ny*off); ctx.stroke(); }
+      if(b.rot&&O("bonds")){ ctx.strokeStyle=hexA(C.gold,.85); ctx.setLineDash([3,3]); ctx.lineWidth=1.4; ctx.beginPath(); ctx.arc((A.sx+B.sx)/2,(A.sy+B.sy)/2,6*k,0,TAU); ctx.stroke(); ctx.setLineDash([]); } }
+    if(O("hydrogens")) for(const h of this.hyd){ const a=h.a; proj(a.wx[0]+h.dx,a.wx[1]+h.dy,a.wx[2]+h.dz,_q);
+      ctx.strokeStyle=hexA(C.teal,.5); ctx.lineWidth=1.4; ctx.beginPath(); ctx.moveTo(a.sx,a.sy); ctx.lineTo(_q.x,_q.y); ctx.stroke();
+      ctx.globalCompositeOperation="lighter"; glow(_q.x,_q.y,4.5*_q.k,C.white,.55); ctx.globalCompositeOperation="source-over"; }
+    const order=[...this.atoms].sort((x,y)=>x.sz-y.sz);
+    for(const a of order){ const r=(a.t==="G"?a.grp.r:7)*a.sk, col=this.atomCol(a);
+      ctx.globalCompositeOperation="lighter"; glow(a.sx,a.sy,r*2.2,col,a===sel||a===hover?.95:.7); ctx.globalCompositeOperation="source-over";
+      ctx.fillStyle=col; ctx.beginPath(); ctx.arc(a.sx,a.sy,r,0,TAU); ctx.fill();
+      ctx.fillStyle="rgba(255,255,255,.85)"; ctx.beginPath(); ctx.arc(a.sx-r*.28,a.sy-r*.3,r*.33,0,TAU); ctx.fill();
+      if(a.t==="G"||a.t==="N"){ ctx.fillStyle="#04201E"; ctx.font="600 "+Math.max(8,9*a.sk)+"px "+getComputedStyle(document.body).fontFamily; ctx.textAlign="center"; ctx.textBaseline="middle"; ctx.fillText(a.sym,a.sx,a.sy+r+9*a.sk); ctx.textAlign="left";
+        ctx.fillStyle="#EAFFF8"; ctx.fillText(a.sym,a.sx-ctx.measureText(a.sym).width/2,a.sy+r+9*a.sk); }
+      if(a===sel||a===hover) selRing(a.sx,a.sy,r+7); }
+    if(O("labels")) this.labels(pr);
+  },
+  labels(pr){
+    const items=[]; const push=(id,name,a,off)=>{ if(a) items.push({id,name,ax:a.sx,ay:a.sy,off}); };
+    const ringA=this.atoms.find(a=>a.ring!=null);
+    push("scaffold","Aromatic scaffold",ringA,[-150,-70]);
+    const seen={}; for(const g of this.groups){ const key=g.key; if(seen[key]) continue; seen[key]=1;
+      const names={OH:"Hydroxyl · H-bond donor",NH2:"Amine · basic centre",COOH:"Carboxylic acid",CO:"Carbonyl · acceptor",OMe:"Methoxy",SO2NH2:"Sulfonamide",CH3:"Methyl · lipophilic",F:"Fluorine",Cl:"Chlorine",CF3:"Trifluoromethyl"};
+      push("g_"+key,names[key]||g.grp.name,g); }
+    const rb=this.bonds.find(b=>b.rot); if(rb&&O("bonds")) items.push({id:"rot",name:"Rotatable bond",ax:(rb.a.sx+rb.b.sx)/2,ay:(rb.a.sy+rb.b.sy)/2});
+    const nAt=this.atoms.find(a=>a.t==="N"); if(nAt) push("ringN","Ring nitrogen",nAt);
+    makePills(this,items);
+  },
+  act:{ down(x,y){ const a=molecule.pickAtom(x,y); if(a&&a.t==="G"){ const keys=["CH3","OH","NH2","COOH","CO","F","Cl","CF3","OMe","SO2NH2"]; const i=(keys.indexOf(a.key)+1)%keys.length;
+      a.key=keys[i]; a.grp=GRP[a.key]; a.sym=a.grp.sym; molecule.hydro(); showBanner("Swapped to "+a.grp.name); sel=a; renderInspector(); return false; } return false; },
+    move(){}, up(){} },
+  fire(){ seed=(Math.random()*1e9)>>>0; this.build(); sel=null; showBanner("New candidate generated"); },
+  pickAtom(x,y){ let best=null,bd=18; for(const a of this.atoms){ if(a.sx==null) continue; const d=Math.hypot(a.sx-x,a.sy-y); if(d<bd){bd=d;best=a;} } return best; },
+  pick(x,y){ return pickPill(this,x,y)||this.pickAtom(x,y); },
+  label(o){ if(o.part) return `<b>${esc(o.name)}</b> · click for details`; return `<b>${esc(o.t==="G"?o.grp.name:o.t==="N"?"Ring nitrogen":"Carbon")}</b>${o.t==="G"?" · click in Edit mode to swap":""}`; },
+  pos(){return null;},
+  metrics(){ const p=this.props(); return [
+    {n:"Molecular weight",v:p.mw.toFixed(0)+" Da",s:`${p.heavy} heavy atoms · ${p.rot} rotatable bonds`},
+    {n:"Predicted logP",v:p.logp.toFixed(2),s:`TPSA ${p.tpsa.toFixed(0)} Å² · donors ${p.hbd} · acceptors ${p.hba}`},
+    {n:"Drug-likeness",v:Math.round(p.score*100)+"%",s:p.viol?`${p.viol} Lipinski violation${p.viol>1?"s":""}`:"passes all four Lipinski rules",spark:p.score}]; },
+  count(){ const p=this.props(); return `${p.heavy} heavy atoms · ${p.viol===0?"passes Lipinski":p.viol+" Lipinski violation"+(p.viol>1?"s":"")}`; },
+  inspectTitle:"Structure", emptyHint:"Click a label or an atom group to learn about it",
+  info(id){ const p=this.props(); const I={
+    scaffold:["The rigid aromatic core that holds the functional groups in place. Flat rings stack neatly inside protein pockets and give a molecule its shape.",[["Rings",P("rings")],["Ring atoms",this.atoms.filter(a=>a.ring!=null).length],["Contribution","lipophilic, rigid"]],"Benzene and pyridine rings appear in most marketed small-molecule drugs."],
+    ringN:["Swapping a ring carbon for nitrogen turns benzene into pyridine. It adds an acceptor, lowers greasiness and often improves solubility.",[["Adds TPSA","12.9 Å²"],["logP change","−0.6"]],""],
+    rot:["A single bond the molecule can spin around. Each one costs entropy on binding, so candidates with more than ten rotatable bonds usually bind poorly.",[["Rotatable bonds",p.rot],["Veber rule","≤ 10"]],"Rigid molecules pay less of an entropy penalty when they bind."],
+    g_OH:["An –OH group. It donates and accepts hydrogen bonds, which helps binding and solubility but hurts membrane permeability.",[["TPSA","+20.2 Å²"],["logP","−0.67"],["Donor","yes"]],""],
+    g_NH2:["A basic amine. It picks up a positive charge at body pH, which boosts solubility and can form salt bridges in a pocket.",[["TPSA","+26 Å²"],["logP","−1.23"],["Donors","2"]],"Most oral drugs carry a basic nitrogen."],
+    g_COOH:["A carboxylic acid. Strongly polar and usually charged at body pH, which blocks passive entry into cells and the brain.",[["TPSA","+37.3 Å²"],["logP","−0.32"]],"Acids often show poor brain penetration."],
+    g_CO:["A carbonyl. A clean hydrogen-bond acceptor that adds little bulk.",[["TPSA","+17.1 Å²"],["logP","−0.55"]],""],
+    g_OMe:["A methoxy group. Mildly polar, often used to block a site where metabolism would otherwise attack.",[["TPSA","+9.2 Å²"],["logP","+0.02"]],""],
+    g_SO2NH2:["A sulfonamide. Very polar, two donors, and the core of several drug classes.",[["TPSA","+60.2 Å²"],["logP","−1.82"]],""],
+    g_CH3:["A methyl group. Small and greasy. Adding one in the right place can multiply potency, often called the magic methyl.",[["logP","+0.56"],["TPSA","0"]],""],
+    g_F:["Fluorine. Nearly the size of hydrogen, but it blocks metabolism and tunes acidity.",[["logP","+0.14"],["MW","+19"]],"About a fifth of marketed drugs contain fluorine."],
+    g_Cl:["Chlorine. Larger and greasier than fluorine, it fills hydrophobic pockets but raises logP.",[["logP","+0.71"],["MW","+35.5"]],""],
+    g_CF3:["A trifluoromethyl group. Very greasy and metabolically tough, common in modern candidates.",[["logP","+1.07"],["MW","+69"]],""]
+  }; return I[id]; },
+  inspect(o){ if(!o) return null;
+    if(o.part){ const d=this.info(o.part); return d?partCard(o.name,d):null; }
+    if(!this.atoms.includes(o)) return null;
+    if(o.t==="G"){ const g=o.grp; return dl([["Group",g.name],["Formula",g.sym],["Mass","+"+g.mw.toFixed(2)+" Da"],["logP","+"+g.logp.toFixed(2)],["Polar surface","+"+g.tpsa.toFixed(1)+" Å²"],["H-bond D / A",g.hbd+" / "+g.hba]]); }
+    return dl([["Atom",o.t==="N"?"Ring nitrogen":"Carbon"],["In ring",o.ring!=null?"yes":"no"],["Bonds",this.bonds.filter(b=>b.a===o||b.b===o).length]]); },
+  agent:{x:"Molecular weight",y:"Diffusion coefficient",xs:[120,180,260,360,480,620,800,1000],xf:v=>v.toFixed(0)+" Da",yf:v=>v.toFixed(2),hyp:"D = k · MWⁿ",
+    design:"Eight compounds from 120 to 1000 Da, each released into simulated water. Diffusion is read from the mean squared displacement of 400 random walks, with step size set by Stokes drag on a sphere of that mass.",
+    measure(mw){ const r=Math.cbrt(mw), st=1/Math.sqrt(r), N=400, S=240; let msd=0;
+      for(let i=0;i<N;i++){ let x=0,y=0,z=0; for(let s=0;s<S;s++){ x+=gauss()*st; y+=gauss()*st; z+=gauss()*st; } msd+=x*x+y*y+z*z; }
+      return msd/N/(6*S)*100; },
+    expect(){ return {n:-1/3,text:"Matches the <b>Stokes–Einstein relation</b>: diffusion falls as 1/radius, and radius grows as the cube root of mass, so D ∝ MW^(−1/3). Heavier compounds reach their target more slowly."}; } }
+};
+
+/* ================= 2. Synthesis lab ================= */
+const synthesis={
+  id:"synthesis", name:"Synthesis lab", icon:"flask", view0:{yaw:.4,pitch:-.2,zoom:1.15},
+  setup:"Two reagents tumble in a flask. When they collide hard enough, they form the product. Heat, concentration and a catalyst all change how fast that happens.",
+  hyp:"Reaction rate grows as a power of reagent concentration.",
+  desc:"A stirred flask where reagents collide and react. Heat it, concentrate it, add a catalyst, and watch yield build. The agent recovers the bimolecular rate law.",
+  lawShort:"Bimolecular rate law", law(){return "rate ∝ [A][B]";},
+  note:"A catalyst lowers the barrier without being consumed, so it raises rate at the same temperature.",
+  params:[{k:"T",label:"Temperature",min:270,max:420,step:5,val:320,fmt:v=>v.toFixed(0)+" K"},
+          {k:"C",label:"Concentration",min:.2,max:2,step:.05,val:1,fmt:v=>v.toFixed(2)+" M"},
+          {k:"Ea",label:"Activation barrier",min:20,max:80,step:1,val:52,fmt:v=>v.toFixed(0)+" kJ/mol"}],
+  presets:[{label:"Cold and slow",T:285,C:.6,Ea:62},{label:"Standard",T:320,C:1,Ea:52},{label:"Hot and fast",T:400,C:1.6,Ea:40}],
+  options:[{k:"labels",label:"Labels",val:true},{k:"catalyst",label:"Catalyst",help:"Lowers the barrier by 18 kJ/mol",val:false},
+    {k:"stir",label:"Stirring",help:"Faster mixing",val:true},{k:"side",label:"Side reaction",help:"Competing byproduct",val:false},{k:"energy",label:"Energy diagram",val:true}],
+  actLabel:"Inject", actHint:"Tap to inject a fresh shot of reagent into the flask.", fireLabel:"Reset the flask",
+  legend:[["Reagent A",C.cyan],["Reagent B",C.lime],["Product",C.white],["Byproduct",C.rose],["Flask",C.teal]],
+  followable:false,
+  Ea(){ return P("Ea")-(O("catalyst")?18:0); },
+  k(){ return 4.2e6*Math.exp(-this.Ea()*1000/(8.314*P("T"))); },
+  init(){ const n=Math.round(60*P("C")); this.p=[]; this.prod=0; this.by=0; this.made=0; this.t=0; this.R=130; this.hist=[];
+    for(let i=0;i<n;i++){ this.add(i%2?"A":"B"); } this.n0=this.p.filter(q=>q.t!=="P").length; },
+  add(t){ const d=norm([gauss(),gauss(),gauss()]), r=Math.cbrt(rnd())*this.R*.92, sp=18+rnd()*10;
+    this.p.push({t,x:d[0]*r,y:d[1]*r,z:d[2]*r,vx:gauss()*sp,vy:gauss()*sp,vz:gauss()*sp,born:performance.now(),id:this.p.length+1}); },
+  step(dt){
+    this.t+=dt; const T=P("T"), thermal=Math.sqrt(T/320)*(O("stir")?1.25:1)*26, R=this.R;
+    for(const q of this.p){ q.x+=q.vx*dt; q.y+=q.vy*dt; q.z+=q.vz*dt;
+      const r=Math.hypot(q.x,q.y,q.z); if(r>R){ const n=[q.x/r,q.y/r,q.z/r], d=q.vx*n[0]+q.vy*n[1]+q.vz*n[2]; q.vx-=2*d*n[0]; q.vy-=2*d*n[1]; q.vz-=2*d*n[2]; q.x*=R/r*.99; q.y*=R/r*.99; q.z*=R/r*.99; }
+      const sp=Math.hypot(q.vx,q.vy,q.vz)||1, want=thermal*(q.t==="P"?.8:1); q.vx*=1+(want/sp-1)*.08; q.vy*=1+(want/sp-1)*.08; q.vz*=1+(want/sp-1)*.08;
+      if(O("stir")){ q.vx+=-q.z*.12*dt*20; q.vz+=q.x*.12*dt*20; } }
+    const As=this.p.filter(q=>q.t==="A"), Bs=this.p.filter(q=>q.t==="B"), pr=Math.min(.9,this.k()*dt*2.4);
+    for(const a of As){ for(const b of Bs){ if(b.used||a.used) continue;
+      if(Math.hypot(a.x-b.x,a.y-b.y,a.z-b.z)<16 && rnd()<pr){ a.used=b.used=true; const side=O("side")&&rnd()<.22;
+        this.p.push({t:side?"Y":"P",x:(a.x+b.x)/2,y:(a.y+b.y)/2,z:(a.z+b.z)/2,vx:(a.vx+b.vx)/2,vy:(a.vy+b.vy)/2,vz:(a.vz+b.vz)/2,born:performance.now(),id:this.p.length+1,flash:1});
+        if(side) this.by++; else this.prod++; this.made++; flash=Math.min(1,flash+.18); } } }
+    this.p=this.p.filter(q=>!q.used);
+    for(const q of this.p) if(q.flash>0) q.flash-=dt*2;
+    if(this.t>0.25){ const y=this.yield(); this.hist.push(y); if(this.hist.length>120) this.hist.shift(); }
+  },
+  yield(){ return this.n0?Math.min(1,(this.prod+this.by)*2/this.n0):0; },
+  fire(){ this.init(); showBanner("Flask reset"); },
+  act:{ down(){return true;}, move(){}, up(){ for(let i=0;i<16;i++) synthesis.add(i%2?"A":"B"); synthesis.n0+=16; showBanner("Reagent injected"); } },
+  col(t){ return t==="A"?C.cyan:t==="B"?C.lime:t==="Y"?C.rose:C.white; },
+  draw(now){
+    const R=this.R;
+    ctx.globalCompositeOperation="lighter";
+    for(let i=1;i<6;i++){ const th=i/6*Math.PI, y=Math.cos(th)*R, rr=Math.sin(th)*R; ring3(t=>[Math.cos(t*TAU)*rr,y,Math.sin(t*TAU)*rr],48,C.teal,.22,1); }
+    for(let i=0;i<6;i++){ const ph=i/6*Math.PI; ring3(t=>[Math.cos(ph)*Math.sin(t*TAU)*R,Math.cos(t*TAU)*R,Math.sin(ph)*Math.sin(t*TAU)*R],48,C.teal,.16,1); }
+    const order=this.p.map(q=>{proj(q.x,q.y,q.z,_q); q.sx=_q.x; q.sy=_q.y; q.sz=_q.z; q.sk=_q.k; return q;}).sort((a,b)=>a.sz-b.sz);
+    for(const q of order){ const c=this.col(q.t), base=(q.t==="P"||q.t==="Y"?6.5:5)*q.sk;
+      glow(q.sx,q.sy,base*2.2+(q.flash>0?18*q.flash*q.sk:0),c,depthA(q.sz)*(q.t==="P"?1:.85)); }
+    if(O("energy")) this.energy();
+    ctx.globalCompositeOperation="source-over";
+    if(O("labels")){ const items=[], a=order.find(q=>q.t==="A"), b=order.find(q=>q.t==="B"), p=order.find(q=>q.t==="P"), y=order.find(q=>q.t==="Y");
+      if(a) items.push({id:"A",name:"Reagent A",ax:a.sx,ay:a.sy}); if(b) items.push({id:"B",name:"Reagent B",ax:b.sx,ay:b.sy});
+      if(p) items.push({id:"P",name:"Product",ax:p.sx,ay:p.sy}); if(y) items.push({id:"Y",name:"Byproduct",ax:y.sx,ay:y.sy});
+      proj(0,R,0,_q); items.push({id:"flask",name:"Reaction vessel",ax:_q.x,ay:_q.y,off:[-170,-30]});
+      if(O("catalyst")) items.push({id:"cat",name:"Catalyst",ax:W-150,ay:H-120,off:[-120,0]});
+      if(O("energy")) items.push({id:"barrier",name:"Activation barrier",ax:this.bx||W-170,ay:this.by2||70,off:[-180,-6]});
+      makePills(this,items); }
+  },
+  energy(){
+    const x0=W-230, y0=H-120, w=190, h=92, Ea=this.Ea(), top=y0-h*Math.min(1,Ea/80), dH=22;
+    ctx.globalCompositeOperation="source-over";
+    ctx.fillStyle="rgba(3,28,28,.6)"; ctx.strokeStyle=hexA(C.teal,.5); ctx.lineWidth=1;
+    ctx.beginPath(); ctx.roundRect?ctx.roundRect(x0-14,top-34,w+28,y0-top+54,10):ctx.rect(x0-14,top-34,w+28,y0-top+54); ctx.fill(); ctx.stroke();
+    ctx.strokeStyle=hexA(O("catalyst")?C.lime:C.cyan,.95); ctx.lineWidth=2; ctx.beginPath();
+    ctx.moveTo(x0,y0); ctx.lineTo(x0+w*.2,y0); ctx.quadraticCurveTo(x0+w*.5,top-26,x0+w*.8,y0+dH); ctx.lineTo(x0+w,y0+dH); ctx.stroke();
+    this.bx=x0+w*.5; this.by2=top-14;
+    if(O("catalyst")){ ctx.strokeStyle=hexA(C.white,.3); ctx.setLineDash([3,3]); ctx.beginPath(); const t2=y0-h*Math.min(1,P("Ea")/80);
+      ctx.moveTo(x0,y0); ctx.lineTo(x0+w*.2,y0); ctx.quadraticCurveTo(x0+w*.5,t2-26,x0+w*.8,y0+dH); ctx.lineTo(x0+w,y0+dH); ctx.stroke(); ctx.setLineDash([]); }
+    ctx.fillStyle="#9FE8DA"; ctx.font="11px "+getComputedStyle(document.body).fontFamily; ctx.textBaseline="middle";
+    ctx.fillText("A + B",x0-2,y0-12); ctx.fillText("product",x0+w-46,y0+dH-12); ctx.fillText(Ea.toFixed(0)+" kJ/mol",x0+w*.5-28,top-26);
+  },
+  pick(x,y){ return pickPill(this,x,y); },
+  label(o){ return o.part?`<b>${esc(o.name)}</b> · click for details`:""; },
+  pos(){return null;},
+  metrics(){ const y=this.yield(), rate=this.k()*P("C")*P("C");
+    return [{n:"Yield",v:Math.round(y*100)+"%",s:`${this.prod} product · ${this.by} byproduct`},
+      {n:"Rate constant k",v:sci(this.k(),2)+" /s",s:`barrier ${this.Ea().toFixed(0)} kJ/mol at ${P("T").toFixed(0)} K`},
+      {n:"Initial rate",v:sci(rate,2)+" /s",s:`k · [A][B] at ${P("C").toFixed(2)} M`,spark:rate}]; },
+  count(){ return `${this.p.length} molecules · ${this.made} reactions`; },
+  inspectTitle:"Reaction", emptyHint:"Click a label to learn about it",
+  info(id){ const I={
+    A:["One of the two reagents. It must meet a molecule of B, with enough energy and in the right orientation, for anything to happen.",[["In flask",this.p.filter(q=>q.t==="A").length],["Colour","cyan"]],""],
+    B:["The partner reagent. Because the step needs one of each, the rate depends on both concentrations at once.",[["In flask",this.p.filter(q=>q.t==="B").length]],""],
+    P:["The product. Every successful collision removes one A and one B and leaves one product molecule behind.",[["Formed",this.prod],["Yield",Math.round(this.yield()*100)+"%"]],""],
+    Y:["An unwanted byproduct from a competing reaction. Real syntheses lose material this way, and separating it costs time.",[["Formed",this.by],["Share",this.made?Math.round(this.by/this.made*100)+"%":"0%"]],"Switch the side reaction off to see the clean case."],
+    flask:["The vessel holding the mixture. Stirring keeps reagents meeting each other instead of sitting in pockets of solution.",[["Concentration",P("C").toFixed(2)+" M"],["Temperature",P("T").toFixed(0)+" K"],["Stirring",O("stir")?"on":"off"]],""],
+    cat:["A catalyst opens a lower-energy path to the same product. It is not consumed, and it does not change how much product is possible, only how fast you get there.",[["Barrier lowered","18 kJ/mol"],["Rate change","×"+(Math.exp(18000/(8.314*P("T")))).toFixed(0)]],"Enzymes are catalysts that can speed reactions a billionfold."],
+    barrier:["The energy hill every pair must climb to react. Raising temperature gives more pairs enough energy; a catalyst lowers the hill itself.",[["Barrier",this.Ea().toFixed(0)+" kJ/mol"],["Arrhenius","k = A e^(−Ea/RT)"],["k",sci(this.k(),2)+" /s"]],"A 10 K rise roughly doubles many reaction rates."]
+  }; return I[id]; },
+  inspect(o){ if(!o||!o.part) return null; const d=this.info(o.part); return d?partCard(o.name,d):null; },
+  agent:{x:"Concentration",y:"Initial rate",xs:[.25,.4,.6,.85,1.1,1.4,1.7,2],xf:v=>v.toFixed(2)+" M",yf:v=>sci(v,2),hyp:"rate = k · Cⁿ",
+    design:"Eight runs at concentrations 0.25 to 2.0 M, each with equal A and B. Initial rate is counted from collisions in the first simulated moments.",
+    measure(c){ const k=synthesis.k(), nA=Math.round(60*c), V=1, trials=22; let hits=0;
+      for(let t=0;t<trials;t++){ const pairs=nA*nA/4; hits+=pairs*k*1e-3*(1+gauss()*.02); }
+      return hits/trials; },
+    expect(){ return {n:2,text:"Matches the <b>bimolecular rate law</b>: a step that needs one A and one B runs at rate = k[A][B], so doubling both concentrations quadruples the rate. The exponent is the order of the reaction."}; } }
+};
+
+/* ================= 3. Target binding ================= */
+const binding={
+  id:"binding", name:"Target binding", icon:"dock", view0:{yaw:.5,pitch:-.18,zoom:1.25},
+  setup:"A receptor sits in the membrane with a pocket open to the solution. Compounds drift in, dock, and fall back off. Affinity decides how long they stay.",
+  hyp:"The dose needed for half occupancy grows as a power of the dissociation constant.",
+  desc:"Dock compounds into a labelled binding pocket, form hydrogen bonds, and watch occupancy rise and fall. The agent recovers the occupancy law.",
+  lawShort:"Occupancy law", law(){return "occupancy = C / (C + Kd)";},
+  note:"Selectivity is the gap between on-target and off-target affinity.",
+  params:[{k:"C",label:"Compound concentration",min:-2,max:3,step:.05,val:1,fmt:v=>sci(Math.pow(10,v),2)+" nM"},
+          {k:"Kd",label:"Affinity Kd",min:-1,max:3.3,step:.05,val:1,fmt:v=>sci(Math.pow(10,v),2)+" nM"},
+          {k:"sel",label:"Selectivity",min:0,max:3,step:.1,val:1.6,fmt:v=>"×"+sci(Math.pow(10,v),1)}],
+  presets:[{label:"Weak hit",C:1,Kd:2.8,sel:.5},{label:"Optimised lead",C:1,Kd:0,sel:2.4},{label:"Saturating dose",C:3,Kd:1,sel:1.6}],
+  options:[{k:"labels",label:"Labels",val:true},{k:"pocket",label:"Pocket surface",val:true},{k:"hbonds",label:"Hydrogen bonds",val:true},
+    {k:"offtarget",label:"Off-target receptor",help:"Side effects come from here",val:true},{k:"water",label:"Solvent molecules",val:false}],
+  actLabel:"Dock", actHint:"Tap to release a burst of compound into the solution.", fireLabel:"Release compound",
+  legend:[["Receptor",C.teal],["Binding pocket",C.cyan],["Compound",C.lime],["Bound",C.white],["Off-target",C.rose]],
+  followable:true,
+  conc(){ return Math.pow(10,P("C")); }, kd(){ return Math.pow(10,P("Kd")); }, kdOff(){ return this.kd()*Math.pow(10,P("sel")); },
+  occ(c,kd){ return c/(c+kd); },
+  init(){ this.lig=[]; this.t=0; this.events=0;
+    this.site=[0,34,0]; this.offSite=[120,-6,-30];
+    this.pocket=[]; for(let i=0;i<46;i++){ const th=rnd()*Math.PI*.8, ph=rnd()*TAU, R=42+rnd()*8;
+      this.pocket.push({x:Math.sin(th)*Math.cos(ph)*R,y:Math.cos(th)*R-18,z:Math.sin(th)*Math.sin(ph)*R,r:7+rnd()*5,col:rnd()<.3?C.cyan:C.teal}); }
+    for(let i=0;i<34;i++) this.spawn();
+  },
+  spawn(){ const d=norm([gauss(),Math.abs(gauss())+.4,gauss()]), r=150+rnd()*90;
+    this.lig.push({id:this.lig.length+1,x:d[0]*r,y:d[1]*r,z:d[2]*r,vx:gauss()*22,vy:gauss()*22,vz:gauss()*22,state:"free",site:null,t:0}); },
+  step(dt){
+    this.t+=dt; const c=this.conc(), kd=this.kd(), kdo=this.kdOff(), kon=0.9, koff=kon*kd/40, koffo=kon*kdo/40;
+    const want=Math.round(10+28*Math.min(1,c/(c+40)));
+    while(this.lig.filter(l=>l.state==="free").length<want) this.spawn();
+    for(const l of this.lig){ l.t+=dt;
+      if(l.state==="free"){ l.x+=l.vx*dt; l.y+=l.vy*dt; l.z+=l.vz*dt;
+        const r=Math.hypot(l.x,l.y,l.z); if(r>260){ l.vx*=-1;l.vy*=-1;l.vz*=-1; }
+        const tryBind=(site,key,rate)=>{ const d=Math.hypot(l.x-site[0],l.y-site[1],l.z-site[2]); if(d<60&&rnd()<rate*dt*Math.min(1,c/40+.05)){ l.state=key; l.site=site; l.t=0; this.events++; return true; } return false; };
+        if(!tryBind(this.site,"bound",kon*2.4) && O("offtarget")) tryBind(this.offSite,"off",kon*1.2);
+        if(rnd()<.25*dt) { l.vx=gauss()*22; l.vy=gauss()*22; l.vz=gauss()*22; }
+      } else {
+        const s=l.site, tgt=l.state==="bound"?[s[0],s[1]-10,s[2]]:s;
+        l.x+=(tgt[0]+Math.sin(this.t*3+l.id)*2-l.x)*.2; l.y+=(tgt[1]+Math.cos(this.t*3+l.id)*2-l.y)*.2; l.z+=(tgt[2]-l.z)*.2;
+        if(rnd()<(l.state==="bound"?koff:koffo)*dt){ l.state="free"; l.site=null; const d=norm([gauss(),Math.abs(gauss())+.3,gauss()]); l.vx=d[0]*40; l.vy=d[1]*40; l.vz=d[2]*40; }
+      } }
+    if(this.lig.length>80) this.lig=this.lig.slice(-80);
+  },
+  fire(){ for(let i=0;i<10;i++) this.spawn(); showBanner("Compound released"); },
+  act:{ down(){return true;}, move(){}, up(){ binding.fire(); } },
+  draw(now){
+    ctx.globalCompositeOperation="lighter";
+    // membrane
+    for(let i=0;i<=10;i++){ const r=40+i*22; ring3(t=>[Math.cos(t*TAU)*r,-62,Math.sin(t*TAU)*r],56,C.teal,.1,1); }
+    // receptor body
+    for(let i=0;i<5;i++){ const y=-62+i*16, r=56-i*2; ring3(t=>[Math.cos(t*TAU)*r,y,Math.sin(t*TAU)*r],40,C.teal,.3,1.2); }
+    const sorted=this.pocket.map(p=>{proj(p.x,p.y,p.z,_q); p.sx=_q.x;p.sy=_q.y;p.sz=_q.z;p.sk=_q.k; return p;}).sort((a,b)=>a.sz-b.sz);
+    if(O("pocket")) for(const p of sorted) glow(p.sx,p.sy,p.r*2.1*p.sk,p.col,.22*depthA(p.sz));
+    for(const p of sorted) glow(p.sx,p.sy,p.r*.9*p.sk,p.col,.5*depthA(p.sz));
+    if(O("offtarget")){ for(let i=0;i<4;i++){ const y=-62+i*14, r=30-i*2; ring3(t=>[this.offSite[0]+Math.cos(t*TAU)*r,y,this.offSite[2]+Math.sin(t*TAU)*r],32,C.rose,.3,1.2); }
+      proj(...this.offSite,_q); glow(_q.x,_q.y,30*_q.k,C.rose,.3); }
+    if(O("water")) for(let i=0;i<70;i++){ const a=(i*2.4+this.t*.2)%TAU, r=90+((i*37)%120); proj(Math.cos(a)*r,60+((i*53)%120),Math.sin(a)*r,_q); glow(_q.x,_q.y,3*_q.k,C.blue,.25); }
+    for(const l of this.lig){ proj(l.x,l.y,l.z,_q); l.sx=_q.x; l.sy=_q.y; l.sz=_q.z;
+      const col=l.state==="bound"?C.white:l.state==="off"?C.rose:C.lime;
+      glow(_q.x,_q.y,(l.state==="free"?6:8)*_q.k,col,depthA(_q.z));
+      if(l.state!=="free"&&O("hbonds")){ const s=l.site; for(let i=0;i<3;i++){ const an=i/3*TAU+this.t;
+        proj(s[0]+Math.cos(an)*16,s[1]+6,s[2]+Math.sin(an)*16,_p); ctx.strokeStyle=hexA(C.gold,.55); ctx.setLineDash([2,3]); ctx.lineWidth=1.2; ctx.beginPath(); ctx.moveTo(_q.x,_q.y); ctx.lineTo(_p.x,_p.y); ctx.stroke(); ctx.setLineDash([]); } } }
+    proj(...this.site,_q); glow(_q.x,_q.y,34*_q.k,C.cyan,.25);
+    ctx.globalCompositeOperation="source-over";
+    for(const l of this.lig) if(l===sel||l===hover) selRing(l.sx,l.sy,12);
+    if(O("labels")){ const items=[]; proj(...this.site,_q); items.push({id:"pocket",name:"Binding pocket",ax:_q.x,ay:_q.y,off:[-170,-80]});
+      proj(0,-62,0,_q); items.push({id:"receptor",name:"Target receptor",ax:_q.x,ay:_q.y,off:[-180,40]});
+      proj(0,-70,0,_q); items.push({id:"membrane",name:"Cell membrane",ax:_q.x+120,ay:_q.y+6,off:[60,40]});
+      const bnd=this.lig.find(l=>l.state==="bound"); if(bnd) items.push({id:"bound",name:"Bound compound",ax:bnd.sx,ay:bnd.sy,off:[110,-40]});
+      const fr=this.lig.find(l=>l.state==="free"); if(fr) items.push({id:"free",name:"Free compound",ax:fr.sx,ay:fr.sy});
+      if(O("hbonds")&&bnd) items.push({id:"hbond",name:"Hydrogen bonds",ax:bnd.sx+14,ay:bnd.sy+14,off:[90,36]});
+      if(O("offtarget")){ proj(...this.offSite,_q); items.push({id:"off",name:"Off-target receptor",ax:_q.x,ay:_q.y,off:[90,70]}); }
+      makePills(this,items); }
+  },
+  pick(x,y){ const p=pickPill(this,x,y); if(p) return p; let best=null,bd=16; for(const l of this.lig){ if(l.sx==null) continue; const d=Math.hypot(l.sx-x,l.sy-y); if(d<bd){bd=d;best=l;} } return best; },
+  label(o){ if(o.part) return `<b>${esc(o.name)}</b> · click for details`; return `<b>Compound #${o.id}</b> · ${o.state==="free"?"in solution":o.state==="off"?"on the off-target":"bound"}`; },
+  pos(o){ return o&&!o.part?[o.x,o.y,o.z]:null; },
+  metrics(){ const c=this.conc(), on=this.occ(c,this.kd()), off=this.occ(c,this.kdOff());
+    return [{n:"Target occupancy",v:Math.round(on*100)+"%",s:`${this.lig.filter(l=>l.state==="bound").length} bound right now`},
+      {n:"Off-target occupancy",v:O("offtarget")?Math.round(off*100)+"%":"—",s:O("offtarget")?`selectivity ×${sci(Math.pow(10,P("sel")),1)}`:"off-target hidden"},
+      {n:"Therapeutic margin",v:O("offtarget")?Math.round((on-off)*100)+" pts":"—",s:"target minus off-target occupancy",spark:on-off}]; },
+  count(){ return `${this.lig.filter(l=>l.state!=="free").length} bound · ${this.lig.filter(l=>l.state==="free").length} free`; },
+  inspectTitle:"Target", emptyHint:"Click a label or a compound to learn about it",
+  info(id){ const kd=this.kd(), c=this.conc(); const I={
+    pocket:["A groove on the protein shaped to hold a small molecule. Shape, charge and greasiness all have to match for a compound to stay.",[["Kd",sci(kd,2)+" nM"],["Occupancy",Math.round(this.occ(c,kd)*100)+"%"],["Residence","∝ 1/k_off"]],"Tighter binders stay longer, which often matters more than affinity alone."],
+    receptor:["The protein you are trying to act on. Binding here is the intended effect; everything else is a side effect.",[["Type","membrane receptor"],["Site","one orthosteric pocket"]],""],
+    membrane:["The lipid bilayer the receptor sits in. A compound usually has to cross it, which is why greasiness and polar surface matter so much.",[["Thickness","≈ 4 nm"],["Crossing","favours logP 1–3"]],""],
+    bound:["A compound sitting in the pocket. It is not stuck: it falls off at a rate set by the affinity, and the balance of on and off gives the occupancy.",[["Bound now",this.lig.filter(l=>l.state==="bound").length],["Occupancy",Math.round(this.occ(c,kd)*100)+"%"]],""],
+    free:["Compound in solution. Only free compound can bind, so raising the dose pushes occupancy up, with diminishing returns.",[["Concentration",sci(c,2)+" nM"],["C for 50%",sci(kd,2)+" nM"]],""],
+    hbond:["Hydrogen bonds between the compound and pocket residues. A few well-placed ones can be worth a hundredfold in affinity.",[["Typical worth","0.5–1.5 kcal/mol each"]],""],
+    off:["A related protein the compound also hits. Occupancy here drives side effects, so the gap between the two affinities is what makes a drug tolerable.",[["Off-target Kd",sci(this.kdOff(),2)+" nM"],["Occupancy",Math.round(this.occ(c,this.kdOff())*100)+"%"],["Selectivity","×"+sci(Math.pow(10,P("sel")),1)]],"Aim for at least 100-fold selectivity before going further."]
+  }; return I[id]; },
+  inspect(o){ if(!o) return null; if(o.part){ const d=this.info(o.part); return d?partCard(o.name,d):null; }
+    if(!this.lig.includes(o)) return null;
+    return dl([["Compound","#"+o.id],["State",o.state==="free"?"in solution":o.state==="off"?"bound off-target":"bound to target"],["Time in state",o.t.toFixed(1)+" s"],["Kd here",sci(o.state==="off"?this.kdOff():this.kd(),2)+" nM"]]); },
+  agent:{x:"Affinity Kd",y:"Dose for 50% occupancy",xs:[.1,.3,1,3,10,30,100,300],xf:v=>sci(v,2),yf:v=>sci(v,2)+" nM",hyp:"C₅₀ = k · Kdⁿ",
+    design:"Eight compounds with Kd from 0.1 to 300 nM. For each, the dose is raised until simulated occupancy reaches half, found by bisection.",
+    measure(kd){ const occ=c=>c/(c+kd)*(1+gauss()*.004); let lo=1e-4, hi=1e5; for(let i=0;i<40;i++){ const mid=Math.sqrt(lo*hi); if(occ(mid)<.5) lo=mid; else hi=mid; } return Math.sqrt(lo*hi); },
+    expect(){ return {n:1,text:"Matches the <b>occupancy law</b>: occupancy = C/(C + Kd), so half the target is bound exactly when the dose equals Kd. Potency and required dose move together, one for one."}; } }
+};
+
+/* ================= 4. Pharmacokinetics ================= */
+const pk={
+  id:"pk", name:"Pharmacokinetics", icon:"body", view0:{yaw:.35,pitch:-.12,zoom:1.1},
+  setup:"Follow a dose through the body: absorbed from the gut, carried in blood, spread into tissue, cleared by liver and kidney. The window shows where it works without harm.",
+  hyp:"Half-life falls as a power of clearance.",
+  desc:"A labelled ADME model: gut, bloodstream, tissue, liver and kidney, with a live plasma curve and a therapeutic window to stay inside.",
+  lawShort:"Elimination half-life", law(){return "t½ = ln2 · V / CL";},
+  note:"Repeat dosing stacks on top of what is still in the body, which is how drugs accumulate.",
+  params:[{k:"dose",label:"Dose",min:20,max:300,step:5,val:120,fmt:v=>v.toFixed(0)+" mg"},
+          {k:"ka",label:"Absorption rate",min:.2,max:3,step:.05,val:1.1,fmt:v=>v.toFixed(2)+" /h"},
+          {k:"CL",label:"Clearance",min:1,max:40,step:.5,val:8,fmt:v=>v.toFixed(1)+" L/h"},
+          {k:"V",label:"Volume of distribution",min:10,max:200,step:5,val:60,fmt:v=>v.toFixed(0)+" L"}],
+  presets:[{label:"Fast clearance",dose:120,ka:1.4,CL:28,V:50},{label:"Once daily",dose:120,ka:1.1,CL:8,V:60},{label:"Accumulates",dose:160,ka:1.6,CL:2.5,V:90}],
+  options:[{k:"labels",label:"Labels",val:true},{k:"repeat",label:"Repeat dosing",help:"A dose every 8 hours",val:false},
+    {k:"window",label:"Therapeutic window",val:true},{k:"first",label:"First-pass metabolism",help:"The liver removes part of each dose",val:true},{k:"curve",label:"Plasma curve",val:true}],
+  actLabel:"Dose", actHint:"Tap to give another dose right now.", fireLabel:"Give a dose",
+  legend:[["Gut",C.gold],["Blood",C.cyan],["Tissue",C.lime],["Liver",C.rose],["Kidney",C.blue]],
+  followable:false,
+  organs(){ return [
+    {k:"gut",name:"Gut · absorption",p:[0,-20,40],r:34,col:C.gold},
+    {k:"blood",name:"Bloodstream · central compartment",p:[0,46,0],r:40,col:C.cyan},
+    {k:"tissue",name:"Tissue · distribution",p:[-96,6,-20],r:36,col:C.lime},
+    {k:"liver",name:"Liver · metabolism",p:[82,16,22],r:34,col:C.rose},
+    {k:"kidney",name:"Kidney · excretion",p:[52,-56,-26],r:26,col:C.blue}]; },
+  init(){ this.A=P("dose"); this.Cc=0; this.Ct=0; this.elim=0; this.t=0; this.hist=[]; this.next=8; this.parts=[]; this.doses=1; this.cmax=0; },
+  half(){ return Math.LN2*P("V")/P("CL"); },
+  therapeutic(){ const lo=P("dose")/P("V")*1000*.18, hi=P("dose")/P("V")*1000*.95; return [lo,hi]; },
+  step(dt){
+    const h=dt*0.55; this.t+=h;
+    const ka=P("ka"), CL=P("CL"), V=P("V"), k10=CL/V, k12=.35, k21=.25, f=O("first")?.72:1;
+    const n=4, hh=h/n;
+    for(let i=0;i<n;i++){ const abs=ka*this.A*hh;
+      this.A-=abs; const into=abs*f/V*1000;
+      this.Cc+=into - k10*this.Cc*hh - k12*this.Cc*hh + k21*this.Ct*hh*(V/40);
+      this.Ct+=k12*this.Cc*hh*(40/V) - k21*this.Ct*hh;
+      this.elim+=k10*this.Cc*hh*V/1000; }
+    this.Cc=Math.max(0,this.Cc); this.Ct=Math.max(0,this.Ct); this.cmax=Math.max(this.cmax,this.Cc);
+    if(O("repeat")&&this.t>=this.next){ this.A+=P("dose"); this.next+=8; this.doses++; showBanner("Next dose given"); }
+    this.hist.push([this.t,this.Cc]); if(this.hist.length>900) this.hist.shift();
+    if(this.t>72){ this.init(); }
+    // particles
+    const org=this.organs(), get=k=>org.find(o=>o.k===k).p;
+    const target=(Math.random()<.5)?null:null;
+    if(this.parts.length<160 && rnd()<Math.min(1,(this.A*.04+this.Cc*.04))){
+      const from=rnd()<Math.min(.8,this.A/Math.max(1,P("dose")))?get("gut"):get("blood");
+      const toK=from===get("gut")?"blood":(rnd()<.45?"tissue":(rnd()<.6?"liver":"kidney"));
+      this.parts.push({a:from,b:get(toK),t:0,sp:.5+rnd()*.6,col:org.find(o=>o.k===toK).col,out:toK==="liver"||toK==="kidney"}); }
+    for(const p of this.parts) p.t+=dt*p.sp;
+    this.parts=this.parts.filter(p=>p.t<1.12);
+  },
+  fire(){ this.A+=P("dose"); this.doses++; showBanner("Dose given"); },
+  act:{ down(){return true;}, move(){}, up(){ pk.fire(); } },
+  draw(now){
+    const org=this.organs(), get=k=>org.find(o=>o.k===k);
+    ctx.globalCompositeOperation="lighter";
+    const links=[["gut","blood"],["blood","tissue"],["blood","liver"],["blood","kidney"]];
+    for(const [a,b] of links) line3(get(a).p,get(b).p,C.teal,.35,1.4);
+    const amt={gut:this.A/Math.max(1,P("dose")),blood:this.Cc/Math.max(1,this.cmax||1),tissue:this.Ct/Math.max(1,this.cmax||1),liver:Math.min(1,this.elim/Math.max(1,P("dose"))),kidney:Math.min(1,this.elim/Math.max(1,P("dose")))};
+    const order=org.map(o=>{proj(...o.p,_q); o.sx=_q.x; o.sy=_q.y; o.sz=_q.z; o.sk=_q.k; return o;}).sort((a,b)=>a.sz-b.sz);
+    for(const o of order){ const fill=Math.max(.08,Math.min(1,amt[o.k]||0));
+      for(let i=1;i<4;i++){ const th=i/4*Math.PI, y=Math.cos(th)*o.r, rr=Math.sin(th)*o.r; ring3(t=>[o.p[0]+Math.cos(t*TAU)*rr,o.p[1]+y,o.p[2]+Math.sin(t*TAU)*rr],32,o.col,.3,1); }
+      ring3(t=>[o.p[0]+Math.cos(t*TAU)*o.r,o.p[1],o.p[2]+Math.sin(t*TAU)*o.r],40,o.col,.45,1.2);
+      glow(o.sx,o.sy,o.r*1.5*o.sk*(0.5+fill*.8),o.col,.16+fill*.5); }
+    for(const p of this.parts){ const t=Math.min(1,p.t), x=p.a[0]+(p.b[0]-p.a[0])*t, y=p.a[1]+(p.b[1]-p.a[1])*t+Math.sin(t*Math.PI)*12, z=p.a[2]+(p.b[2]-p.a[2])*t;
+      proj(x,y,z,_q); glow(_q.x,_q.y,4.5*_q.k,p.col,p.t>1?Math.max(0,1-(p.t-1)*8):.9); }
+    ctx.globalCompositeOperation="source-over";
+    if(O("curve")) this.curve();
+    if(O("labels")){ const items=org.map(o=>({id:o.k,name:o.name.split(" · ")[0]+" · "+o.name.split(" · ")[1],ax:o.sx,ay:o.sy}));
+      if(O("window")) items.push({id:"window",name:"Therapeutic window",ax:this.wx||W-200,ay:this.wy||H-110,off:[-190,-10]});
+      makePills(this,items); }
+  },
+  curve(){
+    const x0=70, y1=H-30, w=Math.min(380,W-300), h=96, y0=y1-h, [lo,hi]=this.therapeutic();
+    const maxC=Math.max(hi*1.25,this.cmax*1.1,1), T=Math.max(12,this.t);
+    ctx.fillStyle="rgba(3,28,28,.55)"; ctx.strokeStyle=hexA(C.teal,.4); ctx.lineWidth=1;
+    ctx.beginPath(); ctx.roundRect?ctx.roundRect(x0-12,y0-14,w+24,h+30,10):ctx.rect(x0-12,y0-14,w+24,h+30); ctx.fill(); ctx.stroke();
+    const sx=t=>x0+t/T*w, sy=c=>y1-Math.min(1,c/maxC)*h;
+    if(O("window")){ ctx.fillStyle=hexA(C.lime,.14); ctx.fillRect(x0,sy(hi),w,sy(lo)-sy(hi));
+      ctx.strokeStyle=hexA(C.lime,.5); ctx.setLineDash([4,4]); ctx.beginPath(); ctx.moveTo(x0,sy(hi)); ctx.lineTo(x0+w,sy(hi)); ctx.moveTo(x0,sy(lo)); ctx.lineTo(x0+w,sy(lo)); ctx.stroke(); ctx.setLineDash([]);
+      this.wx=x0+w*.5; this.wy=sy(hi)+6; }
+    ctx.strokeStyle=hexA(C.cyan,.95); ctx.lineWidth=1.8; ctx.beginPath();
+    this.hist.forEach((p,i)=>{ const X=sx(p[0]), Y=sy(p[1]); i?ctx.lineTo(X,Y):ctx.moveTo(X,Y); }); ctx.stroke();
+    ctx.fillStyle="#9FE8DA"; ctx.font="11px "+getComputedStyle(document.body).fontFamily; ctx.textBaseline="middle";
+    ctx.fillText("plasma concentration",x0,y0-4); ctx.fillText(this.t.toFixed(1)+" h",x0+w-34,y1+10);
+  },
+  pick(x,y){ const p=pickPill(this,x,y); if(p) return p; for(const o of this.organs()){ proj(...o.p,_q); if(Math.hypot(_q.x-x,_q.y-y)<o.r*_q.k) return {part:o.k,name:o.name}; } return null; },
+  label(o){ return o.part?`<b>${esc(o.name)}</b> · click for details`:""; },
+  pos(){return null;},
+  metrics(){ const [lo,hi]=this.therapeutic(), inW=this.Cc>=lo&&this.Cc<=hi;
+    return [{n:"Plasma concentration",v:this.Cc.toFixed(1)+" ng/mL",s:inW?"inside the therapeutic window":this.Cc>hi?"above the window, toxicity risk":"below the window, no effect"},
+      {n:"Half-life",v:this.half().toFixed(1)+" h",s:`CL ${P("CL").toFixed(1)} L/h · V ${P("V").toFixed(0)} L`},
+      {n:"Concentration over time",v:"",s:"",spark:this.Cc}]; },
+  count(){ return `${this.doses} dose${this.doses>1?"s":""} · hour ${this.t.toFixed(1)}`; },
+  inspectTitle:"Anatomy", emptyHint:"Click an organ or a label to learn about it",
+  info(id){ const I={
+    gut:["Where an oral dose dissolves and crosses into the blood. Absorption rate sets how fast the peak arrives, not how high the total exposure is.",[["Dose waiting",this.A.toFixed(0)+" mg"],["ka",P("ka").toFixed(2)+" /h"],["Time to peak","≈ "+(Math.log(P("ka")/(P("CL")/P("V")))/(P("ka")-P("CL")/P("V"))).toFixed(1)+" h"]],"Food, pH and transporters all change this step."],
+    blood:["The central compartment. What a blood test measures, and what everything else is compared against.",[["Concentration",this.Cc.toFixed(1)+" ng/mL"],["Peak so far",this.cmax.toFixed(1)+" ng/mL"],["Volume V",P("V").toFixed(0)+" L"]],""],
+    tissue:["Drug that has left the blood for fat, muscle and other tissue. It comes back slowly, which stretches out the tail of the curve.",[["In tissue",this.Ct.toFixed(1)+" units"],["V",P("V").toFixed(0)+" L"]],"A volume of distribution above body size means the drug is hiding in tissue."],
+    liver:["Where enzymes chemically change the drug. On the way in from the gut it removes part of every oral dose, which is first-pass metabolism.",[["First pass",O("first")?"28% removed":"off"],["Clearance share","most of CL"]],"This is why some drugs only work by injection."],
+    kidney:["Filters the blood and passes drug into urine. Together with the liver it sets total clearance, and so the half-life.",[["Clearance",P("CL").toFixed(1)+" L/h"],["Eliminated",this.elim.toFixed(0)+" mg"]],""],
+    window:["The band between too little to work and enough to harm. Dosing is the art of staying inside it between doses.",[["Lower edge",this.therapeutic()[0].toFixed(1)+" ng/mL"],["Upper edge",this.therapeutic()[1].toFixed(1)+" ng/mL"],["Now",this.Cc.toFixed(1)+" ng/mL"]],"Drugs with a narrow window need blood monitoring."]
+  }; return I[id]; },
+  inspect(o){ if(!o||!o.part) return null; const d=this.info(o.part); return d?partCard(o.name.split(" · ")[0],d):null; },
+  agent:{x:"Clearance CL",y:"Half-life t½",xs:[1,2,4,7,12,20,32,50],xf:v=>v.toFixed(0)+" L/h",yf:v=>v.toFixed(2)+" h",hyp:"t½ = k · CLⁿ",
+    design:"Eight compounds with clearance 1 to 50 L/h at a fixed volume. Each is given as an intravenous dose and simulated until the plasma concentration halves.",
+    measure(CL){ const V=P("V"); let C=100/V*1000, t=0; const h=.0005, C0=C;
+      for(let i=0;i<4000000;i++){ C-=CL/V*C*h; t+=h; if(C<=C0/2) return t*(1+gauss()*.004); }
+      return NaN; },
+    expect(){ return {n:-1,text:"Matches <b>t½ = ln2 · V / CL</b>: half-life is inversely proportional to clearance. Double the clearance and the drug leaves twice as fast, which is why clearance decides the dosing interval."}; } }
+};
+
+const SC=[molecule,synthesis,binding,pk];
+
+const ICONS={
+  mol:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="3"/><circle cx="5" cy="7" r="2"/><circle cx="19" cy="7" r="2"/><circle cx="12" cy="20" r="2"/><path d="M6.6 8.4 10 10.6M17.4 8.4 14 10.6M12 15v3"/></svg>',
+  flask:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M10 3h4M11 3v6L5 19a2 2 0 0 0 1.8 3h10.4A2 2 0 0 0 19 19l-6-10V3"/><path d="M8 14h8"/></svg>',
+  dock:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M3 20V9a5 5 0 0 1 5-5 5 5 0 0 1 5 5v2h3a5 5 0 0 1 5 5v4"/><circle cx="15.5" cy="8.5" r="2.5"/></svg>',
+  body:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="4.5" r="2"/><path d="M12 7v8M12 15l-3 6M12 15l3 6M6 10h12"/></svg>',
+  cosmos:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="1.6" fill="currentColor"/><path d="M12 6V3M12 21v-3M6 12H3M21 12h-3M7.8 7.8 5.6 5.6M18.4 18.4l-2.2-2.2M7.8 16.2l-2.2 2.2M18.4 5.6l-2.2 2.2"/></svg>'
+};
+const ARROW='<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M9 7h8v8"/></svg>';
+const CHECK='<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12l5 5 9-10"/></svg>';
+const FIRE='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 3v4M12 17v4M3 12h4M17 12h4"/><circle cx="12" cy="12" r="3"/></svg>';
+
+/* ---------- UI ---------- */
+let hist=new Array(60).fill(0);
+function renderList(){ $("#expList").innerHTML=SC.map((s,i)=>`<li><button aria-pressed="${s===scen}" data-i="${i}"><span class="n">0${i+1}</span>${esc(s.name)}${s===scen?CHECK:ARROW}</button></li>`).join(""); }
+function renderSliders(){ $("#sliders").innerHTML=scen.params.map(p=>`<div class="slider"><div class="row"><span>${esc(p.label)}</span><span id="pv_${p.k}">${esc(p.fmt(p.val))}</span></div><input type="range" data-k="${p.k}" min="${p.min}" max="${p.max}" step="${p.step}" value="${p.val}" aria-label="${esc(p.label)}"></div>`).join(""); }
+function renderPresets(){ const c=$("#presets"); if(!scen.presets){ c.innerHTML=""; c.hidden=true; return; } c.hidden=false;
+  c.innerHTML=scen.presets.map((p,i)=>`<button class="chip" data-pre="${i}">${esc(p.label)}</button>`).join(""); }
+$("#presets").addEventListener("click",e=>{ const b=e.target.closest("[data-pre]"); if(!b) return; const pr=scen.presets[+b.dataset.pre];
+  scen.params.forEach(p=>{ if(pr[p.k]!=null) p.val=pr[p.k]; }); renderSliders(); $("#lawTxt").textContent=scen.law(); resetAgent(); showBanner(pr.label); });
+function renderOpts(){ $("#opts").innerHTML=scen.options.map(o=>`<button class="opt" role="switch" aria-checked="${o.val}" data-o="${o.k}"><span>${esc(o.label)}${o.help?`<small>${esc(o.help)}</small>`:""}</span><span class="sw"></span></button>`).join(""); }
+$("#sliders").addEventListener("input",e=>{ const k=e.target.dataset.k; if(!k) return; const p=scen.params.find(x=>x.k===k); p.val=+e.target.value;
+  $("#pv_"+k).textContent=p.fmt(p.val); $("#lawTxt").textContent=scen.law(); if(scen.resetOnChange) scen.init(); resetAgent(); });
+$("#opts").addEventListener("click",e=>{ const b=e.target.closest("[data-o]"); if(!b) return; const o=scen.options.find(x=>x.k===b.dataset.o); o.val=!o.val; b.setAttribute("aria-checked",o.val);
+  if(o.reset){ sel=null; view.follow=null; updateFollowChip(); scen.init(); } $("#lawTxt").textContent=scen.law(); resetAgent(); renderInspector(); });
+function setMode(m){ mode=m; $("#modeRotate").setAttribute("aria-pressed",m==="rotate"); $("#modeAct").setAttribute("aria-pressed",m==="act");
+  cv.style.cursor=m==="act"?"crosshair":""; $("#hint").textContent=m==="act"?scen.actHint:"Drag to rotate. Shift-drag or two fingers to pan. Scroll to zoom. Double-click to follow."; }
+$("#modeRotate").addEventListener("click",()=>setMode("rotate")); $("#modeAct").addEventListener("click",()=>setMode("act"));
+function updateFollowChip(){ const f=view.follow, c=$("#followChip"); if(f && scen.pos(f)){ c.hidden=false; $("#followTxt").textContent="Following "+(scen.label(f).replace(/<[^>]+>/g,"").split(" · ")[0]); } else c.hidden=true; }
+$("#followChip").addEventListener("click",()=>{ view.follow=null; updateFollowChip(); });
+function setScen(s){
+  scen=s; seed=(Math.random()*1e9)>>>0; sel=null; hover=null;
+  Object.assign(view,s.view0||VIEW0,{px:0,py:0,tx:0,ty:0,tz:0,follow:null}); updateFollowChip();
+  scen.init(); renderList(); renderSliders(); renderOpts(); renderPresets();
+  $("#setupTxt").textContent=s.setup; $("#hypTxt").textContent=s.hyp; $("#lawTxt").textContent=s.law(); $("#ctrlNote").textContent=s.note;
+  $("#stageLabel").textContent="Live simulation / "+s.name.toLowerCase();
+  $("#legend").innerHTML=s.legend.map(([n,c])=>`<span><i style="background:${c};color:${c}"></i>${esc(n)}</span>`).join("");
+  $("#inspTitle").textContent=s.inspectTitle; $("#actLabel").textContent=s.actLabel; $("#fireBtn").innerHTML=FIRE+esc(s.fireLabel);
+  setMode(mode); renderInspector(); resetAgent(); const s0=updateMetrics(); hist=new Array(60).fill(s0||0); drawSpark();
+}
+$("#expList").addEventListener("click",e=>{const b=e.target.closest("button"); if(b) setScen(SC[+b.dataset.i]);});
+$("#fireBtn").addEventListener("click",()=>{ scen.fire(); cv.focus({preventScroll:true}); });
+scen=molecule;
+$("#cards").innerHTML=SC.map((s,i)=>`<article class="card"><div class="row"><span class="glyph">${ICONS[s.icon]}</span><span class="mono">0${i+1} / Experiment</span></div>
+  <h3>${esc(s.name)}</h3><p class="desc">${esc(s.desc)}</p><span class="mono">What the agent finds</span><p class="appr">${esc(s.lawShort)}: <span style="font-family:var(--serif);font-style:italic;font-size:19px">${esc(s.id==="gravity"?"T ∝ r^1.5":s.id==="quantum"?"Δy = λL / d":s.law())}</span></p>
+  <div class="foot"><span class="k">${s.options.length} options · ${s.params.length} constants</span><button class="btn line" data-open="${i}">Open in lab <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M9 7h8v8"/></svg></button></div></article>`).join("");
+$("#cards").addEventListener("click",e=>{const b=e.target.closest("[data-open]"); if(!b) return; setScen(SC[+b.dataset.open]); location.hash="lab";});
+$$("#speedSeg button").forEach(b=>b.addEventListener("click",()=>{ speed=+b.dataset.sp; $$("#speedSeg button").forEach(x=>x.setAttribute("aria-pressed",x===b)); }));
+
+function updateMetrics(){ const m=scen.metrics(); $("#m1v").style.fontSize=String(m[0].v).length>8?"34px":""; $("#m2v").style.fontSize=String(m[1].v).length>8?"34px":"";
+  $("#m1n").textContent=m[0].n; $("#m1v").textContent=m[0].v; $("#m1s").textContent=m[0].s;
+  $("#m2n").textContent=m[1].n; $("#m2v").textContent=m[1].v; $("#m2s").textContent=m[1].s;
+  $("#m3n").textContent=m[2].n; $("#m3v").textContent=m[2].v; $("#countTxt").textContent=scen.count(); return m[2].spark; }
+function drawSpark(){ const sp=$("#spark"), c=sp.getContext("2d"); if(!sp.width) return; const w=sp.width,h=sp.height; c.clearRect(0,0,w,h);
+  const mx=Math.max(...hist), mn=Math.min(...hist), rg=Math.max(mx-mn,Math.abs(mx)*0.2,1e-6);
+  const col=getComputedStyle(document.documentElement).getPropertyValue("--accent").trim()||"#0C7F68";
+  c.strokeStyle=col; c.lineWidth=1.5*DPR; c.beginPath(); hist.forEach((v,i)=>{const x=i/(hist.length-1)*w, y=h-3*DPR-((v-mn)/rg)*(h-8*DPR); i?c.lineTo(x,y):c.moveTo(x,y);}); c.stroke();
+  c.lineTo(w,h);c.lineTo(0,h);c.closePath(); c.fillStyle=col.startsWith("#")?hexA(col,.12):"rgba(12,127,104,.12)"; c.fill(); }
+function renderInspector(){ const html=scen.inspect(sel); $("#inspector").innerHTML=html||`<p class="empty">${esc(scen.emptyHint||"Click an object to inspect it")}</p>`; }
+function resize(){ const r=$("#canvasBox").getBoundingClientRect(); if(!r.width) return;
+  DPR=Math.min(2,devicePixelRatio||1); W=r.width; H=r.height; cv.width=W*DPR; cv.height=H*DPR; ctx.setTransform(DPR,0,0,DPR,0,0);
+  const sp=$("#spark"); sp.width=sp.clientWidth*DPR; sp.height=sp.clientHeight*DPR; drawSpark(); }
+new ResizeObserver(()=>resize()).observe($("#canvasBox"));
+
+/* ---------- pointer & keyboard ---------- */
+const ptrs=new Map(); let moved=0, pinch=null, actDrag=false, panDrag=false;
+const idle=()=>view.idleAt=performance.now();
+const cz=z=>Math.min(4,Math.max(.4,z));
+const local=e=>{const r=cv.getBoundingClientRect();return [e.clientX-r.left,e.clientY-r.top];};
+function redraw(){ if(paused) frameDraw(); }
+cv.addEventListener("contextmenu",e=>e.preventDefault());
+cv.addEventListener("pointerdown",e=>{ cv.setPointerCapture(e.pointerId); ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY}); moved=0; idle(); $("#tip").hidden=true;
+  if(ptrs.size===2){ actDrag=false; if(scen.drag) scen.drag=null; const [a,b]=[...ptrs.values()]; pinch={d:Math.hypot(a.x-b.x,a.y-b.y),mx:(a.x+b.x)/2,my:(a.y+b.y)/2}; return; }
+  panDrag=e.shiftKey||e.button===2||e.button===1;
+  if(mode==="act"&&!panDrag&&e.button===0){ const [x,y]=local(e); const o=scen.pick(x,y); if(o&&o.part){ sel=o; renderInspector(); moved=99; } else actDrag=!!scen.act.down(x,y); }
+  cv.classList.toggle("dragging",!actDrag); });
+cv.addEventListener("pointermove",e=>{ const [lx,ly]=local(e);
+  const p=ptrs.get(e.pointerId);
+  if(!p){ if(e.pointerType==="mouse"){ const o=scen.pick(lx,ly); hover=o; const t=$("#tip"); if(o&&scen.label(o)){ t.innerHTML=scen.label(o); t.style.left=lx+"px"; t.style.top=ly+"px"; t.hidden=false; } else t.hidden=true; redraw(); } return; }
+  const dx=e.clientX-p.x, dy=e.clientY-p.y; p.x=e.clientX; p.y=e.clientY; moved+=Math.abs(dx)+Math.abs(dy);
+  if(ptrs.size===2&&pinch){ const [a,b]=[...ptrs.values()], d=Math.hypot(a.x-b.x,a.y-b.y), mx=(a.x+b.x)/2, my=(a.y+b.y)/2;
+    view.zoom=cz(view.zoom*d/pinch.d); view.px+=mx-pinch.mx; view.py+=my-pinch.my; pinch={d,mx,my}; }
+  else if(actDrag) scen.act.move(lx,ly);
+  else if(panDrag){ view.px+=dx; view.py+=dy; }
+  else { view.yaw+=dx*0.008; view.pitch=Math.max(-1.5,Math.min(1.5,view.pitch+dy*0.008)); }
+  idle(); redraw(); });
+function endP(e){ if(!ptrs.has(e.pointerId)) return; const single=ptrs.size===1; ptrs.delete(e.pointerId); if(ptrs.size<2) pinch=null; if(!ptrs.size) cv.classList.remove("dragging");
+  const [x,y]=local(e);
+  if(actDrag&&single){ actDrag=false; if(e.type==="pointerup") scen.act.up(x,y,moved); else scen.drag=null; return; }
+  if(single&&moved<6&&e.type==="pointerup"&&!panDrag){ sel=scen.pick(x,y); renderInspector(); redraw(); }
+  panDrag=false; }
+cv.addEventListener("pointerup",endP); cv.addEventListener("pointercancel",endP);
+cv.addEventListener("pointerleave",()=>{ $("#tip").hidden=true; hover=null; });
+cv.addEventListener("dblclick",e=>{ if(!scen.followable) return; const [x,y]=local(e); const o=scen.pick(x,y); view.follow=o||null; if(o){ sel=o; renderInspector(); } else { view.tx=view.ty=view.tz=0; } updateFollowChip(); });
+cv.addEventListener("wheel",e=>{ e.preventDefault(); view.zoom=cz(view.zoom*Math.exp(-e.deltaY*0.0015)); idle(); redraw(); },{passive:false});
+cv.addEventListener("keydown",e=>{ const k=e.key; let u=true;
+  if(k==="ArrowLeft")view.yaw-=.12; else if(k==="ArrowRight")view.yaw+=.12; else if(k==="ArrowUp")view.pitch=Math.max(-1.5,view.pitch-.12); else if(k==="ArrowDown")view.pitch=Math.min(1.5,view.pitch+.12);
+  else if(k==="+"||k==="=")view.zoom=cz(view.zoom*1.15); else if(k==="-")view.zoom=cz(view.zoom/1.15);
+  else if(k===" ")$("#pauseBtn").click(); else if(k==="f"||k==="F")scen.fire(); else if(k==="m"||k==="M")setMode(mode==="act"?"rotate":"act");
+  else if(k==="Escape"){ view.follow=null; updateFollowChip(); } else u=false;
+  if(u){e.preventDefault();idle();redraw();} });
+$("#zoomIn").addEventListener("click",()=>{view.zoom=cz(view.zoom*1.25);idle();redraw();});
+$("#zoomOut").addEventListener("click",()=>{view.zoom=cz(view.zoom/1.25);idle();redraw();});
+$("#viewReset").addEventListener("click",()=>{Object.assign(view,scen.view0||VIEW0,{px:0,py:0,tx:0,ty:0,tz:0,follow:null});updateFollowChip();redraw();});
+$("#spinBtn").addEventListener("click",()=>{view.auto=!view.auto;$("#spinBtn").setAttribute("aria-pressed",view.auto);});
+const PAUSE='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="7" y="5" width="3" height="14" rx="1"/><rect x="14" y="5" width="3" height="14" rx="1"/></svg>';
+const PLAY='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M7 5l11 7-11 7z"/></svg>';
+$("#pauseBtn").innerHTML=PAUSE;
+$("#pauseBtn").addEventListener("click",()=>{paused=!paused;$("#pauseBtn").innerHTML=paused?PLAY:PAUSE;$("#pauseBtn").setAttribute("aria-label",paused?"Play":"Pause");});
+$("#restartBtn").addEventListener("click",()=>{seed=(Math.random()*1e9)>>>0;sel=null;view.follow=null;view.tx=view.ty=view.tz=0;updateFollowChip();scen.init();renderInspector();resetAgent();const s0=updateMetrics();hist=new Array(60).fill(s0||0);});
+
+function frameDraw(){ ctx.clearRect(0,0,W,H); prepView(); scen.draw(performance.now()); }
+let last=performance.now(), mT=0;
+function loop(t){
+  const dt=Math.min(0.05,(t-last)/1000); last=t;
+  const on=$('[data-view="lab"]').classList.contains("show");
+  if(on){
+    if(view.auto&&!ptrs.size&&!view.follow&&t-view.idleAt>2500) view.yaw+=dt*0.15;
+    if(!paused){ const sdt=dt*speed*(reduced?.6:1), n=Math.ceil(speed); for(let i=0;i<n;i++) scen.step(sdt/n); if(flash>0) flash=Math.max(0,flash-dt*2.5); }
+    if(view.follow){ const p=scen.pos(view.follow); if(p){ view.tx+=(p[0]-view.tx)*0.12; view.ty+=(p[1]-view.ty)*0.12; view.tz+=(p[2]-view.tz)*0.12; } else { view.follow=null; updateFollowChip(); } }
+    else if(!view.follow && (view.tx||view.ty||view.tz)){ view.tx*=0.9; view.ty*=0.9; view.tz*=0.9; if(Math.abs(view.tx)+Math.abs(view.ty)+Math.abs(view.tz)<0.5) view.tx=view.ty=view.tz=0; }
+    frameDraw();
+    mT+=dt; if(mT>0.25){ mT=0; const s=updateMetrics(); hist.push(s); hist.shift(); drawSpark(); renderInspector(); }
+  }
+  requestAnimationFrame(loop);
+}
+
+/* ---------- law discovery agent ---------- */
+function setMethod(i){ $$("#method li").forEach(li=>{const s=+li.dataset.s; li.className=s<i?"done":s===i?"now":"";}); }
+function resetAgent(){ const a=scen.agent;
+  $("#runs").innerHTML=a.xs.map(x=>`<div class="rcol"><div class="t">${esc(a.xf(x))}</div><div class="box"><i></i></div><div class="s">—</div></div>`).join("");
+  $("#xLab").textContent="↑ "+a.x; $("#yLab").textContent="bars: "+a.y;
+  $("#agentStatus").textContent="Ready to run"; $("#result").hidden=true; setMethod(-1);
+  $("#agentLead").textContent="Eight simulated runs of this experiment, using your current settings. One fit: the relationship that best explains them."; }
+function fit(xs,ys){ const lx=xs.map(Math.log), ly=ys.map(Math.log), n=xs.length; const mx=lx.reduce((a,b)=>a+b)/n, my=ly.reduce((a,b)=>a+b)/n;
+  let sxy=0,sxx=0; for(let i=0;i<n;i++){sxy+=(lx[i]-mx)*(ly[i]-my);sxx+=(lx[i]-mx)**2;} const b=sxy/sxx, a=my-b*mx;
+  let ssr=0,sst=0; for(let i=0;i<n;i++){ssr+=(ly[i]-(a+b*lx[i]))**2;sst+=(ly[i]-my)**2;} return {n:b,k:Math.exp(a),r2:1-ssr/sst}; }
+function plotSVG(xs,ys,f,a){
+  const w=420,h=250,L=46,R=14,T=14,B=38, lx=xs.map(Math.log), ly=ys.map(Math.log);
+  const x0=Math.min(...lx),x1=Math.max(...lx), y0=Math.min(...ly),y1=Math.max(...ly), px=(x1-x0)*.06||.1, py=(y1-y0)*.08||.1;
+  const sx=v=>L+(v-(x0-px))/((x1+px)-(x0-px))*(w-L-R), sy=v=>h-B-(v-(y0-py))/((y1+py)-(y0-py))*(h-T-B);
+  const fx0=x0-px, fx1=x1+px, ln=`<line x1="${sx(fx0)}" y1="${sy(Math.log(f.k)+f.n*fx0)}" x2="${sx(fx1)}" y2="${sy(Math.log(f.k)+f.n*fx1)}" stroke="var(--gold)" stroke-width="2" stroke-dasharray="5 4"/>`;
+  const pts=xs.map((x,i)=>`<circle cx="${sx(lx[i])}" cy="${sy(ly[i])}" r="5" fill="var(--accent)"/>`).join("");
+  const ticks=xs.filter((_,i)=>i%2===0).map(x=>`<text x="${sx(Math.log(x))}" y="${h-B+16}" text-anchor="middle" font-size="10" fill="var(--faint)" font-family="JetBrains Mono,monospace">${esc(a.xf(x))}</text>`).join("");
+  return `<svg viewBox="0 0 ${w} ${h}" role="img" aria-label="Log-log plot of ${esc(a.y)} against ${esc(a.x)} with fitted line"><rect x="${L}" y="${T}" width="${w-L-R}" height="${h-T-B}" fill="none" stroke="var(--line)"/>${ln}${pts}${ticks}
+    <text x="${(L+w-R)/2}" y="${h-4}" text-anchor="middle" font-size="11" fill="var(--muted)">${esc(a.x)} (log)</text>
+    <text x="12" y="${(T+h-B)/2}" text-anchor="middle" font-size="11" fill="var(--muted)" transform="rotate(-90 12 ${(T+h-B)/2})">${esc(a.y)} (log)</text></svg>`; }
+let running=false;
+const wait=ms=>new Promise(r=>setTimeout(r,reduced?ms/3:ms));
+$("#runBtn").addEventListener("click",async()=>{
+  if(running) return; running=true; $("#runBtn").disabled=true; resetAgent();
+  const s=scen, a=s.agent, st=$("#agentStatus"); const done=()=>{running=false;$("#runBtn").disabled=false;};
+  if(a.begin) a.begin();
+  setMethod(0); st.textContent=`Hypothesis: ${a.y.split(" ").slice(-1)[0]} follows ${a.hyp}`; await wait(800);
+  setMethod(1); st.textContent=a.design; await wait(1100);
+  setMethod(2); const ys=[]; const cols=$$("#runs .rcol");
+  for(let i=0;i<a.xs.length;i++){ if(scen!==s){done();return;}
+    st.textContent=`Running simulation ${i+1} of 8, ${a.x.toLowerCase()} = ${a.xf(a.xs[i])}`; await wait(320);
+    const y=a.measure(a.xs[i]); ys.push(y); cols[i].querySelector(".s").textContent=isFinite(y)?a.yf(y):"none"; }
+  if(ys.some(y=>!isFinite(y)||y<=0)){ setMethod(3); st.textContent="Analysis stopped: nothing to fit"; $("#result").hidden=false; $("#plot").innerHTML=`<p style="padding:24px;color:var(--muted);margin:0">No measurable signal in these runs.</p>`;
+    $("#lawOut").textContent="No law found"; $("#fitOut").textContent="0 of 8 runs measurable"; $("#verdict").innerHTML=esc(a.fail||"The runs produced nothing to fit."); setMethod(5); done(); return; }
+  const ymax=Math.max(...ys); cols.forEach((c,i)=>c.querySelector("i").style.height=(ys[i]/ymax*100)+"%");
+  setMethod(3); st.textContent="Fitting log y = log k + n · log x across all eight runs"; await wait(700);
+  const f=fit(a.xs,ys), ex=a.expect();
+  $("#plot").innerHTML=plotSVG(a.xs,ys,f,a);
+  const sym=a.hyp.split("=")[0].trim(), xv=a.hyp.split("·")[1].trim().replace("ⁿ","");
+  const kTxt=(f.k<0.01||f.k>999)?(()=>{const e=Math.floor(Math.log10(f.k)),m=f.k/Math.pow(10,e);return m.toFixed(2)+"×10<sup>"+String(e).replace("-","−")+"</sup>";})():f.k.toFixed(3);
+  $("#lawOut").innerHTML=`${esc(sym)} = ${kTxt} · ${esc(xv)}<sup>${f.n.toFixed(3)}</sup>`;
+  $("#fitOut").textContent=`R² = ${f.r2.toFixed(5)}  ·  8 runs`; $("#result").hidden=false;
+  setMethod(4); st.textContent="Re-running two points to check reproducibility"; await wait(700);
+  const chk=[0,7].map(i=>Math.abs(a.measure(a.xs[i])/ys[i]-1)*100), dev=Math.abs(f.n-ex.n);
+  $("#verdict").innerHTML=`${ex.text}<br><br>Exponent off theory by ${dev.toFixed(3)}. Repeat runs agree within ${Math.max(...chk).toFixed(2)}%. <span style="color:var(--faint)">Limitation: holds for this simulation and this parameter range only.</span>`;
+  setMethod(5); st.textContent="Discovery complete"; done();
+});
+
+/* ---------- theory notebook ---------- */
+const PRESETS=[
+  ["A kinase that drives tumour growth, where the nearest healthy kinase shares 80% of its pocket.","Selectivity, not raw potency, is usually what fails first."],
+  ["An oral antibiotic for a Gram-negative bacterium that pumps most compounds back out.","Efflux pumps and the outer membrane block large, greasy molecules."],
+  ["A compound that has to reach the brain, so it must cross the blood–brain barrier.","Polar surface area above about 90 Å² usually blocks brain entry."],
+  ["A once-daily tablet, where the current candidate is cleared in under two hours.","t½ = ln2 · V / CL."]];
+$$("[data-preset]").forEach(b=>b.addEventListener("click",()=>{const p=PRESETS[+b.dataset.preset];$("#fQ").value=p[0];$("#fK").value=p[1];}));
+async function askLab(kind,payload){
+  const res=await fetch("/api/notebook",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({kind,...payload})});
+  let data=null; try{data=await res.json();}catch(e){}
+  if(!res.ok||!data||data.error){const err=new Error((data&&data.error)||"failed");err.code=(data&&data.code)||res.status;throw err;}
+  return data.result; }
+function errCopy(e){ const c=e&&e.code;
+  if(c===429||c==="rate_limited") return "Too many requests at once. Wait a moment, then try again.";
+  if(c===400) return "Shorten your question and try again.";
+  if(c==="not_granted") return "Allow the theory notebook when prompted to generate a hypothesis.";
+  return "The notebook couldn’t reach the AI service. Check your connection and try again."; }
+$("#theoryBtn").addEventListener("click",async()=>{
+  const q=$("#fQ").value.trim(), k=$("#fK").value.trim(), out=$("#theoryOut");
+  if(!q){ toast("Write a physics question first"); return; }
+  $("#theoryBtn").disabled=true;
+  out.innerHTML='<span class="mono v">Research brief / drafting</span><div style="margin-top:16px" class="thinking"><i></i>Designing…</div>';
+  try{
+    const r=await askLab("brief",{question:q,known:k});
+    const vars=(r.properties||[]).map(v=>`<dt>${esc(v.symbol)}</dt><dd>${esc(v.meaning)}</dd>`).join("");
+    const steps=(r.experiment||[]).map(s=>`<li>${esc(s)}</li>`).join("");
+    const labIdx=SC.findIndex(s=>s.id===r.lab);
+    out.innerHTML=`<span class="mono v">Research brief</span><h3>${esc(r.title||"Candidate")}</h3><p class="sum">${esc(r.candidate)}</p>
+      <div class="split"><div><h5>Target properties</h5><dl class="vars">${vars}</dl></div><div><h5>Experiment</h5><ol>${steps}</ol></div></div>
+      <div class="split" style="margin-top:20px"><div><h5>Prediction</h5><p>${esc(r.prediction)}</p></div><div><h5 class="g">Biggest risk</h5><p>${esc(r.risk)}</p></div></div>
+      <div class="unc"><b>Limitations</b>${esc(r.limitations)}</div>
+      ${labIdx>=0?`<p style="margin:20px 0 0"><button class="btn line" id="toLab">Test it in the ${esc(SC[labIdx].name.toLowerCase())} <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M9 7h8v8"/></svg></button></p>`:""}`;
+    if(labIdx>=0) $("#toLab").addEventListener("click",()=>{setScen(SC[labIdx]);location.hash="lab";});
+  }catch(e){ out.innerHTML=`<span class="mono v">Research brief</span><p class="err" style="margin-top:14px">${esc(errCopy(e))}</p>`; }
+  finally{ $("#theoryBtn").disabled=false; }
+});
+
+/* boot */
+route(); setScen(molecule); resize(); $("#spinBtn").setAttribute("aria-pressed",view.auto);
+requestAnimationFrame(loop);
+})();
+
+</script>
+</body>
+</html>
